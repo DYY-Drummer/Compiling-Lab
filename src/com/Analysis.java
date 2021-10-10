@@ -17,7 +17,7 @@ public class Analysis {
         }
     }
     public void goNext(String next) throws Exception {
-        if(next.equals(""))
+        if(next.equals("")||next.equals('\t'))
             return;
         //System.out.print("------"+next+"------\n");
         if(Character.isLetter(next.charAt(0))||next.charAt(0)=='_')

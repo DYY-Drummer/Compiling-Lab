@@ -1,0 +1,7 @@
+[jobs.Lexer]
+
+image = { source = "dockerfile", path = "."}
+
+run = [
+  "java src/com/Test $input",
+]

@@ -1,4 +1,4 @@
-[jobs.Lexer]
+[jobs.lexer]
 
 image = { source = "dockerfile", path = "."}
 

@@ -1,20 +1,107 @@
 package com;
 
 
+import jdk.nashorn.internal.runtime.ECMAException;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
 
 public class Analysis {
-    public static Analysis analysis=new Analysis();
+    public static ArrayList<Token> token_list=new ArrayList<>();
     String[] opt={"=",";","(",")","{","}","+","*","/", "<",">"};
+    int currentToken;
+    boolean nextLine;
     public void analyze(String str) throws Exception {
 
         String[] word =str.split("\\s+");
+        nextLine=false;
         for(int i=0;i<word.length;i++) {
+            if(nextLine)
+                break;
             goNext(word[i]);
             //System.out.print("------"+word[i]+"------\n");
         }
     }
+    public void CompUnit() throws Exception{
+        if(token_list.size()==0)
+            return;
+        removeComment();
+        for(int i=0;i<token_list.size();i++){
+            System.out.printf("%s \n",token_list.get(i).word);
+        }
+        currentToken=-1;
+        FuncDef();
+    }
+    public void FuncDef() throws Exception{
+        System.out.print("define dso_local");
+        FuncType();
+        Ident();
+        if(getNextToken().word.equals("(")){
+            System.out.print("(");
+        }
+        else {
+            throw new Exception("wrong def format");
+        }
+        if(getNextToken().word.equals(")")){
+            System.out.print(")");
+        }
+        else {
+            throw new Exception("wrong def format");
+        }
+        Block();
+    }
+    public void FuncType() throws Exception{
+        Token token=getNextToken();
+        if(token.word.equals("int")){
+            System.out.print(" i32");
+        }
+        else{
+            throw new Exception("wrong FuncType");
+        }
+    }
+    public void Ident() throws Exception{
+        Token token=getNextToken();
+        if(token.word.equals("main")){
+            System.out.print(" @main");
+        }
+    }
+    public void Block() throws Exception{
+        if(getNextToken().word.equals("{")){
+            System.out.printf("{\n");
+        }
+        else {
+            throw new Exception("wrong LBrace format");
+        }
+        Stmt();
+        if(getNextToken().word.equals("}")){
+            System.out.print("}");
+        }
+        else {
+            throw new Exception("wrong RBrace format");
+        }
+    }
+    public void Stmt() throws Exception{
+        if(getNextToken().word.equals("return")){
+            System.out.printf("\tret");
+        }
+        else {
+            throw new Exception("Wrong return");
+        }
+        Token token=getNextToken();
+        if(token.id.equals("Num"))
+        {
+            System.out.printf(" i32 %s\n",token.word);
+        }
+        else {
+            throw new Exception("wrong return value");
+        }
+        if(!getNextToken().word.equals(";")){
+            throw new Exception("Expected for ';'");
+        }
+
+    }
     public void goNext(String next) throws Exception {
-        if(next.equals("")||next.equals('\t'))
+        if(next.equals("")||next.equals('\t')||(next.length()>1&&next.charAt(0)=='/'&&next.charAt(1)=='/'))
             return;
         //System.out.print("------"+next+"------\n");
         if(Character.isLetter(next.charAt(0))||next.charAt(0)=='_')
@@ -29,6 +116,13 @@ public class Analysis {
             System.out.println("Err");
             throw new Exception("Wrong input");
         }
+    }
+    public Token getNextToken()throws Exception{
+        currentToken++;
+        if(currentToken>token_list.size()-1){
+            throw new Exception("Token_list doesn't enough!");
+        }
+        return token_list.get(currentToken);
     }
     public boolean isOpt(String c)
     {
@@ -73,7 +167,11 @@ public class Analysis {
             } else if ("continue".equals(str)) {
                 System.out.println("Continue");
             } else if ("return".equals(str)) {
-                System.out.println("Return");
+                token_list.add(new Token("Keyword","return"));
+            } else if("int".equals(str)) {
+                token_list.add(new Token("FuncType","int"));
+            } else if("main".equals(str)) {
+                token_list.add(new Token("Ident","main"));
             } else {
                 return false;
             }
@@ -81,10 +179,69 @@ public class Analysis {
         return true;
     }
     public void number(String str) throws Exception {
+        if(str.charAt(0)=='0'){
+            if(str.length()>1&&(str.charAt(1)=='x'||str.charAt(1)=='X')){
+                hexadecimal(str);
+            }
+            else {
+                octal(str);
+            }
+        }
+        else{
+            decimal(str);
+        }
+
+    }
+    public void decimal(String str) throws Exception{
+        String num=cutNumber(str);
+        token_list.add(new Token("Num",num.toString()));
+        if(num.length()<str.length()){
+            String next=str.substring(num.length());
+            goNext(next);
+        }
+    }
+    public int hex16To10(String hex){
+        BigInteger intNum=new BigInteger(hex,16);
+        return intNum.intValue();
+    }
+    public void hexadecimal(String str) throws Exception{
+        if(str.length()<3||!Character.isDigit(str.charAt(2))){
+            throw new Exception("hex only has '0x'");
+        }
         char[] temp=str.toCharArray();
         StringBuilder word=new StringBuilder();
+        word.append(str, 0, 2);
         int i;
-        for(i=0;i<temp.length;i++)
+        for(i=2;i<temp.length;i++)
+        {
+            if(!Character.isDigit(temp[i])&&!((temp[i]<='f'&&temp[i]>='a')||(temp[i]<='F'&&temp[i]>='A')))
+            {
+                break;
+            }
+            word.append(temp[i]);
+        }
+        token_list.add(new Token("Num",hex16To10(word.toString())+""));
+        if(i!=temp.length){
+            String next=str.substring(i);
+            goNext(next);
+        }
+    }
+    public int oct8To10(String oct){
+        BigInteger intNum=new BigInteger(oct,8);
+        return intNum.intValue();
+    }
+    public void octal(String str) throws Exception{
+        String num=cutNumber(str);
+        token_list.add(new Token("Num",oct8To10(num)+""));
+        if(num.length()<str.length()){
+            String next=str.substring(num.length());
+            goNext(next);
+        }
+    }
+    public String cutNumber(String str){
+        char[] temp=str.toCharArray();
+        StringBuilder word=new StringBuilder();
+        for(int i=0;i<temp.length;i++)
         {
             if(!Character.isDigit(temp[i]))
             {
@@ -92,11 +249,7 @@ public class Analysis {
             }
             word.append(temp[i]);
         }
-        System.out.print("Number("+word.toString()+")\n");
-        if(i!=temp.length){
-            String next=String.valueOf(temp).substring(i,temp.length);
-            goNext(next);
-        }
+        return word.toString();
     }
     public void operator(String str) throws Exception {
 
@@ -118,21 +271,42 @@ public class Analysis {
                 System.out.println("Assign");
             }
         } else if (str.charAt(0)==';') {
-            System.out.println("Semicolon");
+            token_list.add(new Token(";",";"));
         } else if (str.charAt(0)=='(') {
-            System.out.println("LPar");
+            token_list.add(new Token("LPar","("));
         } else if (str.charAt(0)==')') {
-            System.out.println("RPar");
+            token_list.add(new Token("RPar",")"));
         } else if (str.charAt(0)=='{') {
-            System.out.println("LBrace");
+            token_list.add(new Token("LBrace","{"));
         } else if (str.charAt(0)=='}') {
-            System.out.println("RBrace");
+            token_list.add(new Token("RBrace","}"));
         } else if (str.charAt(0)=='+'){
             System.out.println("Plus");
         } else if (str.charAt(0)=='*') {
-            System.out.println("Mult");
+            if(str.length()>1&&str.charAt(1)=='/'){
+                token_list.add(new Token("RComment","*/"));
+                if(str.length()>2){
+                    goNext(str.substring(2));
+                }
+                return;
+            }else {
+                token_list.add(new Token("Mult", "*"));
+            }
         } else if (str.charAt(0)=='/') {
-            System.out.println("Div");
+            if(str.length()>1&&str.charAt(1)=='*'){
+                token_list.add(new Token("LComment","/*"));
+                if(str.length()>2){
+                    goNext(str.substring(2));
+                }
+                return;
+            }
+            else if(str.length()>1&&str.charAt(1)=='/'){
+                nextLine=true;
+                return;
+            }
+            else {
+                token_list.add(new Token("Div", "/"));
+            }
         } else if (str.charAt(0)=='<') {
             System.out.println("Lt");
         } else if (str.charAt(0)=='>') {
@@ -142,5 +316,19 @@ public class Analysis {
             goNext(str.substring(1));
         }
     }
+    public void removeComment(){
+        int flag=-1;
+        for(int i=0;i<token_list.size();i++)
+        {
+            if(token_list.get(i).id.equals("LComment")){
+                flag=i;
+            }
+            else if(token_list.get(i).id.equals("RComment")&&flag!=-1){
+                for(int j=flag;j<=i;j++){
+                    token_list.remove(flag);
+                }
+                flag=-1;
+            }
+        }
+    }
 }
-

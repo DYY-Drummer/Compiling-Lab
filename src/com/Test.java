@@ -8,17 +8,25 @@ public class Test {
 
             File file=new File(args[0]);
             BufferedReader reader=new BufferedReader(new FileReader(file));
+            Analysis analysis=new Analysis();
             String temp;
+            //separate token
             while((temp=reader.readLine())!=null) {
                 //System.out.print("------"+temp+"------\n");
-                Analysis.analysis.analyze(temp);
+                analysis.analyze(temp);
             }
-            //System.out.println("Over!!!!!!!!!");
+            Analysis.token_list.add(new Token("END","#"));
+//            for(int i=0;i<Analysis.token_list.size();i++){
+//                System.out.printf("%s  %s\n",Analysis.token_list.get(i).id,Analysis.token_list.get(i).word);
+//            }
+            //parser
+            analysis.CompUnit();
+            //close file
             reader.close();
         }catch (IOException e){
             System.out.println(e);
         }catch (Exception e1){
-
+            System.out.println(e1);
         }
 
 

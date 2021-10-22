@@ -6,8 +6,11 @@ public class Test {
     public static void main(String[] args) {
         try {
 
-            File file=new File(args[0]);
-            BufferedReader reader=new BufferedReader(new FileReader(file));
+            File input=new File(args[0]);
+            File output=new File(args[1]);
+            BufferedReader reader=new BufferedReader(new FileReader(input));
+            PrintStream outputStream=new PrintStream(output);
+            System.setOut(outputStream);
             Analysis analysis=new Analysis();
             String temp;
             //separate token

@@ -10,12 +10,12 @@ public class Test {
             File output=new File(args[1]);
             BufferedReader reader=new BufferedReader(new FileReader(input));
             PrintStream outputStream=new PrintStream(output);
-            //System.setOut(outputStream);
+            System.setOut(outputStream);
             Analysis analysis=new Analysis();
             String temp;
             //separate token
             while((temp=reader.readLine())!=null) {
-                System.out.print("------"+temp+"------\n");
+                //System.out.print("------"+temp+"------\n");
                 analysis.analyze(temp);
             }
             Analysis.token_list.add(new Token("END","#"));

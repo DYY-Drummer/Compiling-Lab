@@ -1,6 +1,7 @@
 package com;
 
 
+import javafx.stage.StageStyle;
 import jdk.nashorn.internal.runtime.ECMAException;
 
 import java.math.BigInteger;
@@ -22,6 +23,8 @@ public class Analysis {
                         str = str.substring(i + 2);
                         break;
                     }
+                    else
+                        return;
                 }
             }
         }

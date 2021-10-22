@@ -1,2 +1,2 @@
-define dso_local i32 @main(){
-	retjava.lang.Exception: wrong return value
+0x234
+java.lang.NumberFormatException: For input string: "x234"

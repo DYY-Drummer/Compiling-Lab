@@ -203,7 +203,7 @@ public class Analysis {
         }
         char[] temp=str.toCharArray();
         StringBuilder word=new StringBuilder();
-        word.append(str, 0, 2);
+        //word.append(str, 0, 2);
         int i;
         for(i=2;i<temp.length;i++)
         {

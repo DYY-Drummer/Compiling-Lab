@@ -1,0 +1,2 @@
+define dso_local i32 @main(){
+	retjava.lang.Exception: wrong return value

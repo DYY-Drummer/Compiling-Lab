@@ -198,7 +198,7 @@ public class Analysis {
         return intNum.intValue();
     }
     public void hexadecimal(String str) throws Exception{
-        if(str.length()<3||!Character.isDigit(str.charAt(2))){
+        if(str.length()<3){
             throw new Exception("hex only has '0x'");
         }
         char[] temp=str.toCharArray();

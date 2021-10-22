@@ -18,10 +18,10 @@ public class Analysis {
             for(int i=0;i<temp.length-1;i++){
                 if(temp[i]=='*'&&temp[i+1]=='/'){
                     isComment=false;
-                    if(i+1<temp.length-1)
-                        str=str.substring(i+1);
-                    else
-                        return;
+                    if(i+1<temp.length-1) {
+                        str = str.substring(i + 2);
+                        break;
+                    }
                 }
             }
         }
@@ -37,10 +37,10 @@ public class Analysis {
                 for(int j=0;j<temp.length-1;j++){
                     if(temp[j]=='*'&&temp[j+1]=='/'){
                         isComment=false;
-                        if(j+1<temp.length-1)
-                            word[i]=word[i].substring(j+1);
-                        else
-                            return;
+                        if(j+1<temp.length-1) {
+                            word[i] = word[i].substring(j + 2);
+                            break;
+                        }
                     }
                 }
             }
@@ -133,24 +133,25 @@ public class Analysis {
         if(next.equals("")||next.equals('\t')){
             return;
         }
-        if(next.length()>1&&next.charAt(0)=='/'&&next.charAt(1)=='/'){
-            nextLine=true;
-            return;
-        }
         if(isComment){
             char[] temp=next.toCharArray();
             for(int i=0;i<temp.length-1;i++){
                 if(temp[i]=='*'&&temp[i+1]=='/'){
                     isComment=false;
-                    if(i+1<temp.length-1)
-                        next=next.substring(i+1);
-                    else
-                        return;
+                    if(i+1<temp.length-1) {
+                        next = next.substring(i + 2);
+                        break;
+                    }
                 }
             }
         }
         if (isComment)
             return;
+        if(next.length()>1&&next.charAt(0)=='/'&&next.charAt(1)=='/'){
+            nextLine=true;
+            return;
+        }
+
         //System.out.print("------"+next+"------\n");
         if(Character.isLetter(next.charAt(0))||next.charAt(0)=='_')
         {

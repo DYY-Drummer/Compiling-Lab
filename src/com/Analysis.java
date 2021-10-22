@@ -26,9 +26,9 @@ public class Analysis {
         if(token_list.size()==0)
             return;
         removeComment();
-        for(int i=0;i<token_list.size();i++){
-            System.out.printf("%s \n",token_list.get(i).word);
-        }
+//        for(int i=0;i<token_list.size();i++){
+//            System.out.printf("%s \n",token_list.get(i).word);
+//        }
         currentToken=-1;
         FuncDef();
     }

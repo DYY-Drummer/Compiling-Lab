@@ -144,7 +144,8 @@ public class Analysis {
             word.append(temp[i]);
         }
         if(!isKeyword(word.toString())){
-            System.out.print("Ident("+word.toString()+")\n");
+            //System.out.print("Ident("+word.toString()+")\n");
+            throw new Exception("wrong key word");
         }
         if(i!=temp.length){
             String next=String.valueOf(temp).substring(i,temp.length);
@@ -158,14 +159,6 @@ public class Analysis {
         if(str!=null){
             if ("if".equals(str)) {
                 System.out.println("If");
-            } else if ("else".equals(str)) {
-                System.out.println("Else");
-            } else if ("while".equals(str)) {
-                System.out.println("While");
-            } else if ("break".equals(str)) {
-                System.out.println("Break");
-            } else if ("continue".equals(str)) {
-                System.out.println("Continue");
             } else if ("return".equals(str)) {
                 token_list.add(new Token("Keyword","return"));
             } else if("int".equals(str)) {

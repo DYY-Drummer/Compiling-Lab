@@ -113,7 +113,7 @@ public class Analysis {
         }else if(isOpt(String.valueOf(next.charAt(0)))){
             operator(next);
         }else{
-            System.out.println("Err");
+            System.out.println("ErrGoNext");
             throw new Exception("Wrong input");
         }
     }

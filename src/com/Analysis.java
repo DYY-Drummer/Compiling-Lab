@@ -145,7 +145,7 @@ public class Analysis {
         }
         if(!isKeyword(word.toString())){
             //System.out.print("Ident("+word.toString()+")\n");
-            throw new Exception("wrong key word");
+            token_list.add(new Token("Ident",word.toString()));
         }
         if(i!=temp.length){
             String next=String.valueOf(temp).substring(i,temp.length);

@@ -1,2 +1,0 @@
-0x234
-java.lang.NumberFormatException: For input string: "x234"

@@ -10,14 +10,43 @@ public class Analysis {
     public static ArrayList<Token> token_list=new ArrayList<>();
     String[] opt={"=",";","(",")","{","}","+","*","/", "<",">"};
     int currentToken;
+    boolean isComment=false;
     boolean nextLine;
     public void analyze(String str) throws Exception {
-
+        if(isComment){
+            char[] temp=str.toCharArray();
+            for(int i=0;i<temp.length-1;i++){
+                if(temp[i]=='*'&&temp[i+1]=='/'){
+                    isComment=false;
+                    if(i+1<temp.length-1)
+                        str=str.substring(i+1);
+                    else
+                        return;
+                }
+            }
+        }
+        if(isComment)
+            return;
         String[] word =str.split("\\s+");
         nextLine=false;
         for(int i=0;i<word.length;i++) {
             if(nextLine)
                 break;
+            if(isComment){
+                char[] temp=word[i].toCharArray();
+                for(int j=0;j<temp.length-1;j++){
+                    if(temp[j]=='*'&&temp[j+1]=='/'){
+                        isComment=false;
+                        if(j+1<temp.length-1)
+                            word[i]=word[i].substring(j+1);
+                        else
+                            return;
+                    }
+                }
+            }
+            if(isComment)
+                continue;
+            //System.out.println(word[i]);
             goNext(word[i]);
             //System.out.print("------"+word[i]+"------\n");
         }
@@ -25,7 +54,7 @@ public class Analysis {
     public void CompUnit() throws Exception{
         if(token_list.size()==0)
             return;
-        removeComment();
+        //removeComment();
 //        for(int i=0;i<token_list.size();i++){
 //            System.out.printf("%s \n",token_list.get(i).word);
 //        }
@@ -96,12 +125,31 @@ public class Analysis {
             throw new Exception("wrong return value");
         }
         if(!getNextToken().word.equals(";")){
-            throw new Exception("Expected for ';'");
+            throw new Exception("Expected ';'");
         }
 
     }
     public void goNext(String next) throws Exception {
-        if(next.equals("")||next.equals('\t')||(next.length()>1&&next.charAt(0)=='/'&&next.charAt(1)=='/'))
+        if(next.equals("")||next.equals('\t')){
+            return;
+        }
+        if(next.length()>1&&next.charAt(0)=='/'&&next.charAt(1)=='/'){
+            nextLine=true;
+            return;
+        }
+        if(isComment){
+            char[] temp=next.toCharArray();
+            for(int i=0;i<temp.length-1;i++){
+                if(temp[i]=='*'&&temp[i+1]=='/'){
+                    isComment=false;
+                    if(i+1<temp.length-1)
+                        next=next.substring(i+1);
+                    else
+                        return;
+                }
+            }
+        }
+        if (isComment)
             return;
         //System.out.print("------"+next+"------\n");
         if(Character.isLetter(next.charAt(0))||next.charAt(0)=='_')
@@ -220,6 +268,8 @@ public class Analysis {
         }
     }
     public int oct8To10(String oct){
+        if(oct.length()>1)
+            oct=oct.substring(1);
         BigInteger intNum=new BigInteger(oct,8);
         return intNum.intValue();
     }
@@ -277,7 +327,8 @@ public class Analysis {
             System.out.println("Plus");
         } else if (str.charAt(0)=='*') {
             if(str.length()>1&&str.charAt(1)=='/'){
-                token_list.add(new Token("RComment","*/"));
+                isComment=false;
+                //token_list.add(new Token("RComment","*/"));
                 if(str.length()>2){
                     goNext(str.substring(2));
                 }
@@ -287,7 +338,8 @@ public class Analysis {
             }
         } else if (str.charAt(0)=='/') {
             if(str.length()>1&&str.charAt(1)=='*'){
-                token_list.add(new Token("LComment","/*"));
+                isComment=true;
+                //token_list.add(new Token("LComment","/*"));
                 if(str.length()>2){
                     goNext(str.substring(2));
                 }
@@ -309,7 +361,7 @@ public class Analysis {
             goNext(str.substring(1));
         }
     }
-    public void removeComment(){
+   /* public void removeComment(){
         int flag=-1;
         for(int i=0;i<token_list.size();i++)
         {
@@ -323,5 +375,5 @@ public class Analysis {
                 flag=-1;
             }
         }
-    }
+    }*/
 }

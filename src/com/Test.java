@@ -30,7 +30,7 @@ public class Test {
             System.out.println(e);
         }catch (Exception e1){
             System.out.println(e1);
-            System.exit(1);
+            //System.exit(1);
         }
 
 

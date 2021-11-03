@@ -10,7 +10,7 @@ public class Test {
             File output=new File(args[1]);
             BufferedReader reader=new BufferedReader(new FileReader(input));
             PrintStream outputStream=new PrintStream(output);
-            //System.setOut(outputStream);
+            System.setOut(outputStream);
             Tokenizer tokenizer=new Tokenizer();
 
             String temp;

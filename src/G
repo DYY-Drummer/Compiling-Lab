@@ -1,0 +1,16 @@
+CompUnit   -> FuncDef
+FuncDef    -> FuncType Ident '(' ')' Block
+FuncType   -> 'int'
+Ident      -> 'main'
+Block      -> '{' Stmt '}'
+Stmt       -> 'return' Exp ';'
+Exp        -> AddExp
+AddExp     -> MulExp AddExp_
+AddExp_    -> ('+' | '−') MulExp AddExp_
+              | ε
+MulExp     -> UnaryExp MulExp_
+MulExp_    -> ('*' | '/' | '%') UnaryExp MulExp_
+              | ε
+UnaryExp   -> PrimaryExp | UnaryOp UnaryExp
+PrimaryExp -> '(' Exp ')' | Number
+UnaryOp    -> '+' | '-'

@@ -10,19 +10,21 @@ public class Test {
             File output=new File(args[1]);
             BufferedReader reader=new BufferedReader(new FileReader(input));
             PrintStream outputStream=new PrintStream(output);
-            System.setOut(outputStream);
-            Analysis analysis=new Analysis();
+            //System.setOut(outputStream);
+            Tokenizer tokenizer=new Tokenizer();
+
             String temp;
             //separate token
             while((temp=reader.readLine())!=null) {
                 //System.out.print("------"+temp+"------\n");
-                analysis.analyze(temp);
+                tokenizer.analyze(temp);
             }
-            Analysis.token_list.add(new Token("END","#"));
+            tokenizer.token_list.add(new Token("END","#"));
             //parser
 //            for(int i=0;i<Analysis.token_list.size();i++)
 //                System.out.println(Analysis.token_list.get(i).word);
-            analysis.CompUnit();
+            Parser parser=new Parser();
+            parser.CompUnit();
             //close file
             reader.close();
         }catch (IOException e){

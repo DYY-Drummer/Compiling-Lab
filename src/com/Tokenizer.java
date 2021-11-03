@@ -1,15 +1,11 @@
 package com;
 
-
-
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 
-public class Analysis {
+public class Tokenizer {
     public static ArrayList<Token> token_list=new ArrayList<>();
-    String[] opt={"=",";","(",")","{","}","+","*","/", "<",">"};
-    int currentToken;
+    String[] opt={"=",";","(",")","{","}","+","-","*","/", "<",">"};
     boolean isComment=false;
     boolean nextLine;
     public void analyze(String str) throws Exception {
@@ -53,86 +49,9 @@ public class Analysis {
             //System.out.print("------"+word[i]+"------\n");
         }
     }
-    public void CompUnit() throws Exception{
-        if(token_list.size()==0)
-            return;
-        //removeComment();
-//        for(int i=0;i<token_list.size();i++){
-//            System.out.printf("%s \n",token_list.get(i).word);
-//        }
-        currentToken=-1;
-        FuncDef();
-    }
-    public void FuncDef() throws Exception{
-        System.out.print("define dso_local");
-        FuncType();
-        Ident();
-        if(getNextToken().word.equals("(")){
-            System.out.print("(");
-        }
-        else {
-            throw new Exception("wrong def format");
-        }
-        if(getNextToken().word.equals(")")){
-            System.out.print(")");
-        }
-        else {
-            throw new Exception("wrong def format");
-        }
-        Block();
-    }
-    public void FuncType() throws Exception{
-        Token token=getNextToken();
-        if(token.word.equals("int")){
-            System.out.print(" i32");
-        }
-        else{
-            throw new Exception("wrong FuncType");
-        }
-    }
-    public void Ident() throws Exception{
-        Token token=getNextToken();
-        if(token.word.equals("main")){
-            System.out.print(" @main");
-        }
-    }
-    public void Block() throws Exception{
-        if(getNextToken().word.equals("{")){
-            System.out.printf("{\n");
-        }
-        else {
-            throw new Exception("wrong LBrace format");
-        }
-        Stmt();
-        if(getNextToken().word.equals("}")){
-            System.out.print("}");
-        }
-        else {
-            throw new Exception("wrong RBrace format");
-        }
-    }
-    public void Stmt() throws Exception{
-        if(getNextToken().word.equals("return")){
-            System.out.printf("\tret");
-        }
-        else {
-            throw new Exception("Wrong return");
-        }
-        Token token=getNextToken();
-        if(token.id.equals("Num"))
-        {
-            System.out.printf(" i32 %s\n",token.word);
-        }
-        else {
-            throw new Exception("wrong return value");
-        }
-        if(!getNextToken().word.equals(";")){
-            throw new Exception("Expected ';'");
-        }
 
-    }
     public void goNext(String next) throws Exception {
-        if(next.equals("")||next.equals('\t')){
+        if(next.equals("")){
             return;
         }
         if(isComment){
@@ -164,24 +83,10 @@ public class Analysis {
         }else if(isOpt(String.valueOf(next.charAt(0)))){
             operator(next);
         }else{
-            System.out.println("ErrGoNext");
-            throw new Exception("Wrong input");
+            throw new Exception("Wrong input in goNext()");
         }
     }
-    public Token getNextToken()throws Exception{
-        currentToken++;
-        if(currentToken>token_list.size()-1){
-            throw new Exception("Token_list doesn't enough!");
-        }
-        return token_list.get(currentToken);
-    }
-    public boolean isOpt(String c)
-    {
-        for(int i=0;i< opt.length;i++)
-            if(opt[i].equals(c))
-                return true;
-        return false;
-    }
+
     public void identifier(String str) throws Exception {
         char[] temp=str.toCharArray();
         StringBuilder word=new StringBuilder();
@@ -221,6 +126,13 @@ public class Analysis {
             }
         }
         return true;
+    }
+    public boolean isOpt(String c)
+    {
+        for(int i=0;i< opt.length;i++)
+            if(opt[i].equals(c))
+                return true;
+        return false;
     }
     public void number(String str) throws Exception {
         if(str.charAt(0)=='0'){
@@ -327,7 +239,9 @@ public class Analysis {
         } else if (str.charAt(0)=='}') {
             token_list.add(new Token("RBrace","}"));
         } else if (str.charAt(0)=='+'){
-            System.out.println("Plus");
+            token_list.add(new Token("UnaryOp","+"));
+        } else if (str.charAt(0)=='-'){
+            token_list.add(new Token("UnaryOp","-"));
         } else if (str.charAt(0)=='*') {
             if(str.length()>1&&str.charAt(1)=='/'){
                 isComment=false;
@@ -355,6 +269,8 @@ public class Analysis {
             else {
                 token_list.add(new Token("Div", "/"));
             }
+        } else if(str.charAt(0)=='%'){
+          token_list.add(new Token("%","%"));
         } else if (str.charAt(0)=='<') {
             System.out.println("Lt");
         } else if (str.charAt(0)=='>') {
@@ -364,19 +280,5 @@ public class Analysis {
             goNext(str.substring(1));
         }
     }
-   /* public void removeComment(){
-        int flag=-1;
-        for(int i=0;i<token_list.size();i++)
-        {
-            if(token_list.get(i).id.equals("LComment")){
-                flag=i;
-            }
-            else if(token_list.get(i).id.equals("RComment")&&flag!=-1){
-                for(int j=flag;j<=i;j++){
-                    token_list.remove(flag);
-                }
-                flag=-1;
-            }
-        }
-    }*/
+
 }

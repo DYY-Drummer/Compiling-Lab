@@ -5,7 +5,9 @@ import java.util.List;
 
 public class Calculator {
     public int compute(String calStr){
+        //System.out.println("------"+calStr);
         calStr=removeSerialSign(calStr);
+        //System.out.println("------"+calStr);
         try {
             return (int)calBase(calStr);
         } catch (Exception e) {
@@ -70,7 +72,7 @@ public class Calculator {
         if (calStr.charAt(0) == 'a' || calStr.charAt(0) == 'b') {
             calStr = "0"+calStr;
         }
-        String regex = "[a-d]";
+        String regex = "[a-e]";
         String[] numberArr_ = calStr.split(regex);
         for (int i = 0; i < numberArr_.length; i++) {
 
@@ -111,7 +113,7 @@ public class Calculator {
             }else if ("c".equals(calStrArr.get(index))) {
                 result = numberArr.get(index)*numberArr.get(index+1);
             }else if("d".equals(calStrArr.get(index))){
-                result = numberArr.get(index)/numberArr.get(index+1);
+                result = (int)(numberArr.get(index)/numberArr.get(index+1));
             }else if("e".equals(calStrArr.get(index))){
                 result = numberArr.get(index)%numberArr.get(index+1);
             }
@@ -133,7 +135,7 @@ public class Calculator {
             calStr_ = replace(calStr_);
             ModelArr modelArr = splitCalStr(calStr_);
             double result = baseCal(modelArr);
-            String result__ = result+""; //此处得到 -2
+            String result__ = result+"";
             String result_ = result>0?(result+""):("@"+(result__.substring(1)));
             calStr = calStr.substring(0,start)+result_+calStr.substring(end+1);
             return DifficultCal(calStr);

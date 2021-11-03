@@ -17,9 +17,8 @@ public class Parser {
     public void CompUnit() throws Exception{
         if(token_list.size()==0)
             return;
-        //removeComment();
 //        for(int i=0;i<token_list.size();i++){
-//            System.out.printf("%s \n",token_list.get(i).word);
+//            System.out.printf("%s ",token_list.get(i).word);
 //        }
         currentToken=-1;
         FuncDef();

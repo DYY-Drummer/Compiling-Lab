@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class Tokenizer {
     public static ArrayList<Token> token_list=new ArrayList<>();
-    String[] opt={"=",";","(",")","{","}","+","-","*","/", "<",">"};
+    String[] opt={"=",";","(",")","{","}","+","-","*","/","%","<",">"};
     boolean isComment=false;
     boolean nextLine;
     public void analyze(String str) throws Exception {
@@ -62,6 +62,9 @@ public class Tokenizer {
                     if(i+1<temp.length-1) {
                         next = next.substring(i + 2);
                         break;
+                    }
+                    else{
+                        return;
                     }
                 }
             }

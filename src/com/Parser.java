@@ -13,6 +13,7 @@ public class Parser {
     int currentToken;
     int expValue;
     int registerNum;
+    boolean constInit;
     public Token getNextToken()throws Exception{
         currentToken++;
         if(currentToken>token_list.size()-1){
@@ -156,7 +157,9 @@ public class Parser {
 
     }
     public void ConstInitVal()throws Exception{
+        constInit=true;
         ConstExp();
+        constInit=false;
     }
     public void ConstExp()throws Exception{
         AddExp();
@@ -290,6 +293,9 @@ public class Parser {
         } else if(token.id.equals("Ident")){
             for(Variable i:variable_list){
                 if(token.word.equals(i.name)){
+                    if(constInit&&!i.isConst){
+                        throw new Exception("Const val can't be init by val");
+                    }
                     if(!i.assigned){
                         throw new Exception("variable in UnaryExp hasn't been assigned");
                     }

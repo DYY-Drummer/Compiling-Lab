@@ -97,9 +97,21 @@ public class Parser {
         }else if(token.id.equals("Ident")||token.word.equals("return")){
             currentToken--;
             Stmt();
-        }else{
+        }else if(token.id.equals("Func")){
+            if(token.word.equals("putint")){
+                putint();
+            }
+        }else{System.out.println("-------"+token.word);
             throw new Exception("Wrong in BlockItem");
         }
+    }
+    public void putint()throws Exception{
+        currentToken++;
+        Exp();
+        expValue=calculator.compute(expression.toString());
+        expression=new StringBuilder("");
+        System.out.printf("\n\tcall void @putint(i32 %d)",expValue);
+        currentToken+=2;
     }
     public void Decl()throws Exception{
         Token token=getNextToken();

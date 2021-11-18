@@ -11,6 +11,8 @@ public class Test {
             BufferedReader reader=new BufferedReader(new FileReader(input));
             PrintStream outputStream=new PrintStream(output);
             System.setOut(outputStream);
+            System.out.println("declare i32 @getch()\n" +
+                    "declare void @putch(i32)");
             Tokenizer tokenizer=new Tokenizer();
 
             String temp;

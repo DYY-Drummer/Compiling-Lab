@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Calculator {
-    public int compute(String calStr){
+    int registerNum;
+    public int compute(String calStr,int registerNum){
         //System.out.println("------"+calStr);
         calStr=removeSerialSign(calStr);
+        this.registerNum=registerNum;
         //System.out.println("------"+calStr);
         try {
             return (int)calBase(calStr);
@@ -61,8 +63,6 @@ public class Calculator {
         public void setCalStrArr(List<String> calStrArr) {
             this.calStrArr = calStrArr;
         }
-
-
     }
 
     public ModelArr splitCalStr(String calStr){

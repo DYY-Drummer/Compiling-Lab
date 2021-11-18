@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class Tokenizer {
     public static ArrayList<Token> token_list=new ArrayList<>();
-    String[] opt={"=",";","(",")","{","}","+","-","*","/","%","<",">"};
+    String[] opt={"=",";","(",")","{","}","+","-","*","/", "%","<",">",","};
     boolean isComment=false;
     boolean nextLine;
     public void analyze(String str) throws Exception {
@@ -121,9 +121,9 @@ public class Tokenizer {
             } else if ("return".equals(str)) {
                 token_list.add(new Token("Keyword","return"));
             } else if("int".equals(str)) {
-                token_list.add(new Token("FuncType","int"));
-            } else if("main".equals(str)) {
-                token_list.add(new Token("Ident","main"));
+                token_list.add(new Token("Keyword","int"));
+            } else if("const".equals(str)) {
+                token_list.add(new Token("Keyword","const"));
             } else {
                 return false;
             }
@@ -274,6 +274,8 @@ public class Tokenizer {
             }
         } else if(str.charAt(0)=='%'){
           token_list.add(new Token("%","%"));
+        } else if(str.charAt(0)==','){
+            token_list.add(new Token(",",","));
         } else if (str.charAt(0)=='<') {
             System.out.println("Lt");
         } else if (str.charAt(0)=='>') {

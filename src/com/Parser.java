@@ -1,18 +1,32 @@
 package com;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Parser {
     ArrayList<Token> token_list=Tokenizer.token_list;
+    ArrayList<Variable> variable_list=new ArrayList<>();
+    Map<String,Integer> register_map=new HashMap<>();
     Calculator calculator=new Calculator();
     StringBuilder expression=new StringBuilder("");
     int currentToken;
+    int expValue;
+    int registerNum;
     public Token getNextToken()throws Exception{
         currentToken++;
         if(currentToken>token_list.size()-1){
             throw new Exception("Token_list doesn't enough!");
         }
         return token_list.get(currentToken);
+    }
+    public boolean var_isExist(String name){
+        for(Variable i:variable_list){
+            if(i.name.equals(name)){
+                return true;
+            }
+        }
+        return false;
     }
     public void CompUnit() throws Exception{
         if(token_list.size()==0)
@@ -21,6 +35,7 @@ public class Parser {
 //            System.out.printf("%s ",token_list.get(i).word);
 //        }
         currentToken=-1;
+        registerNum=1;
         FuncDef();
     }
     public void FuncDef() throws Exception{
@@ -63,13 +78,111 @@ public class Parser {
         else {
             throw new Exception("wrong LBrace format");
         }
-        Stmt();
+        BlockItem();
         if(getNextToken().word.equals("}")){
             System.out.print("}");
         }
         else {
             throw new Exception("wrong RBrace format");
         }
+    }
+    public void BlockItem()throws Exception{
+        Token token=getNextToken();
+        if(token.word.equals("}")){
+            currentToken--;
+        }else if(token.id.equals("Keyword")){
+            currentToken--;
+            Decl();
+        }else if(token.id.equals("Ident")){
+            currentToken--;
+            Stmt();
+        }else{
+            throw new Exception("Wrong in BlockItem");
+        }
+    }
+    public void Decl()throws Exception{
+        Token token=getNextToken();
+        if(token.word.equals("const")){
+            ConstDecl();
+        }else if (token.word.equals("int")){
+            VarDecl();
+        }else{
+            throw new Exception("Wrong in Decl");
+        }
+    }
+    public void ConstDecl()throws Exception{
+        Token token=getNextToken();
+        if(!token.word.equals("int")){
+            throw new Exception("Wrong BType in ConstDecl");
+        }
+        ConstDef();
+        while(getNextToken().word.equals(",")){
+            ConstDef();
+        }
+        currentToken--;
+        if(!getNextToken().word.equals(";")){
+            throw new Exception("Missing ';' in ConstDecl");
+        }
+    }
+    public void ConstDef()throws Exception{
+        Token token=getNextToken();
+        String varName;
+        if(token.id.equals("Ident")){
+            varName=token.word;
+        }else{
+            throw new Exception("Missing Ident in ConstDef");
+        }
+        if(!getNextToken().word.equals("=")){
+            throw new Exception("Missing '=' in ConstDef");
+        }
+        Variable var=new Variable(varName,true);
+        ConstInitVal();
+        var.value=expValue;
+        variable_list.add(var);
+
+    }
+    public void ConstInitVal()throws Exception{
+        ConstExp();
+    }
+    public void ConstExp()throws Exception{
+        AddExp();
+    }
+    public void VarDecl()throws Exception{
+        VarDef();
+        while (getNextToken().word.equals(",")){
+            VarDef();
+        }
+        currentToken--;
+        if(!getNextToken().word.equals(";")){
+            throw new Exception("Missing ';' in VarDecl");
+        }
+    }
+    public void VarDef()throws Exception{
+        Token token=getNextToken();
+        if(!token.id.equals("Ident")){
+            throw new Exception("Missing Ident in VarDef");
+        }
+        if(var_isExist(token.word)){
+            throw new Exception("local variable name already exist");
+        }
+        String name=token.word;
+        int reg=registerNum;
+        System.out.printf("\n\t%%l%d = alloca i32",registerNum);
+        register_map.put(name,reg);
+        token =getNextToken();
+        if(token.word.equals("=")){
+            InitVal();
+            Variable var=new Variable(name,false);
+            var.value=expValue;
+            variable_list.add(var);
+            //计算表达式这里还要修改成寄存器计算
+            System.out.printf("\n\tstore i32 %%%d, i32* %%%d",registerNum,reg);
+        }else{
+            currentToken--;
+        }
+    }
+    public void InitVal()throws Exception{
+        Exp();
     }
     public void Stmt() throws Exception{
         if(getNextToken().word.equals("return")){
@@ -79,7 +192,8 @@ public class Parser {
             throw new Exception("Wrong return");
         }
         Exp();
-        System.out.printf("\ti32 %d",calculator.compute(expression.toString()));
+        expValue=calculator.compute(expression.toString(),registerNum);
+        //System.out.printf("\ti32 %d",calculator.compute(expression.toString()));
         expression=new StringBuilder("");
         if(!getNextToken().word.equals(";")){
             throw new Exception("Expected ';'");

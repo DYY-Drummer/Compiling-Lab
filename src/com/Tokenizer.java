@@ -215,7 +215,8 @@ public class Tokenizer {
     public void operator(String str) throws Exception {
 
         if (str.charAt(0)=='=') {
-            if(str.length()>1){
+            token_list.add(new Token("=","="));
+            /*if(str.length()>1){
                 if(str.charAt(1)=='='){
                     System.out.println("Eq");
                     if(str.length()>2){
@@ -230,7 +231,7 @@ public class Tokenizer {
                 return;
             }else{
                 System.out.println("Assign");
-            }
+            }*/
         } else if (str.charAt(0)==';') {
             token_list.add(new Token(";",";"));
         } else if (str.charAt(0)=='(') {

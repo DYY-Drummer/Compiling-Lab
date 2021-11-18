@@ -8,5 +8,6 @@ public class Variable {
     public Variable(String name,boolean isConst){
         this.name=name;
         this.isConst=isConst;
+
     }
 }

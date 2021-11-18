@@ -5,10 +5,9 @@ import java.util.List;
 
 public class Calculator {
     int registerNum;
-    public int compute(String calStr,int registerNum){
+    public int compute(String calStr){
         //System.out.println("------"+calStr);
         calStr=removeSerialSign(calStr);
-        this.registerNum=registerNum;
         //System.out.println("------"+calStr);
         try {
             return (int)calBase(calStr);

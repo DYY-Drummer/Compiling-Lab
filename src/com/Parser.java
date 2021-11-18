@@ -73,27 +73,28 @@ public class Parser {
     }
     public void Block() throws Exception{
         if(getNextToken().word.equals("{")){
-            System.out.print("{\n");
+            System.out.print("{");
         }
         else {
             throw new Exception("wrong LBrace format");
         }
-        BlockItem();
-        if(getNextToken().word.equals("}")){
-            System.out.print("}");
+        while(!getNextToken().word.equals("}")){
+            /*for(int i=currentToken;i<currentToken+6;i++){
+            System.out.println(token_list.get(i).word);
+        }*/
+            currentToken--;
+            BlockItem();
         }
-        else {
-            throw new Exception("wrong RBrace format");
-        }
+        System.out.print("}");
     }
     public void BlockItem()throws Exception{
         Token token=getNextToken();
         if(token.word.equals("}")){
             currentToken--;
-        }else if(token.id.equals("Keyword")){
+        }else if(token.id.equals("Keyword")&&!token.word.equals("return")){
             currentToken--;
             Decl();
-        }else if(token.id.equals("Ident")){
+        }else if(token.id.equals("Ident")||token.word.equals("return")){
             currentToken--;
             Stmt();
         }else{
@@ -138,6 +139,7 @@ public class Parser {
         Variable var=new Variable(varName,true);
         ConstInitVal();
         var.value=expValue;
+        var.assigned=true;
         variable_list.add(var);
 
     }
@@ -146,6 +148,8 @@ public class Parser {
     }
     public void ConstExp()throws Exception{
         AddExp();
+        expValue=calculator.compute(expression.toString());
+        expression=new StringBuilder("");
     }
     public void VarDecl()throws Exception{
         VarDef();
@@ -158,6 +162,9 @@ public class Parser {
         }
     }
     public void VarDef()throws Exception{
+//        for(int i=currentToken;i<currentToken+6;i++){
+//            System.out.println(token_list.get(i).word);
+//        }
         Token token=getNextToken();
         if(!token.id.equals("Ident")){
             throw new Exception("Missing Ident in VarDef");
@@ -167,36 +174,59 @@ public class Parser {
         }
         String name=token.word;
         int reg=registerNum;
-        System.out.printf("\n\t%%l%d = alloca i32",registerNum);
+        registerNum++;
+        System.out.printf("\n\t%%l%d = alloca i32",reg);
         register_map.put(name,reg);
-        token =getNextToken();
-        if(token.word.equals("=")){
+        Variable var=new Variable(name,false);
+        if(getNextToken().word.equals("=")){
             InitVal();
-            Variable var=new Variable(name,false);
             var.value=expValue;
-            variable_list.add(var);
-            //计算表达式这里还要修改成寄存器计算
-            System.out.printf("\n\tstore i32 %%%d, i32* %%%d",registerNum,reg);
+            var.assigned=true;
+            System.out.printf("\n\tstore i32 %d, i32* %%l%d",expValue,reg);
         }else{
             currentToken--;
         }
+        variable_list.add(var);
     }
     public void InitVal()throws Exception{
         Exp();
+        expValue=calculator.compute(expression.toString());
+        expression=new StringBuilder("");
     }
     public void Stmt() throws Exception{
-        if(getNextToken().word.equals("return")){
-            System.out.print("\tret");
+        Token token=getNextToken();
+        if(token.word.equals("return")){
+            Exp();
+            expValue=calculator.compute(expression.toString());
+            //System.out.printf("\ti32 %d",calculator.compute(expression.toString()));
+            expression=new StringBuilder("");
+            System.out.printf("\n\tret i32 %d",expValue);
+        } else if(token_list.get(currentToken+1).word.equals("=")){
+            if(!register_map.containsKey(token.word)){
+                throw new Exception("variable in Stmt hasn't been declared");
+            }
+            int reg=register_map.get(token.word);
+            String name=token.word;
+            currentToken++;
+            Exp();
+            expValue=calculator.compute(expression.toString());
+            expression=new StringBuilder("");
+            System.out.printf("\n\tstore i32 %d, i32* %%l%d",expValue,reg);
+            Variable var = new Variable("temp",false);
+            for(Variable i:variable_list){
+                if(i.name.equals(name)){
+                    var=i;
+                    break;
+                }
+            }
+            var.value=expValue;
+            var.assigned=true;
+
+        } else{
+            Exp();
         }
-        else {
-            throw new Exception("Wrong return");
-        }
-        Exp();
-        expValue=calculator.compute(expression.toString(),registerNum);
-        //System.out.printf("\ti32 %d",calculator.compute(expression.toString()));
-        expression=new StringBuilder("");
         if(!getNextToken().word.equals(";")){
-            throw new Exception("Expected ';'");
+            throw new Exception("Missing ';' in Stmt");
         }
 
     }
@@ -214,7 +244,7 @@ public class Parser {
             expression.append(token.word);
             MulExp();
             AddExp_();
-        }else if(token.word.equals(";")||token.word.equals(")")){
+        }else if(token.word.equals(";")||token.word.equals(")")||token.word.equals(",")){
             currentToken--;
         }else{
             throw new Exception("Wrong in AddExp_()");
@@ -232,7 +262,7 @@ public class Parser {
             expression.append(token.word);
             UnaryExp();
             MulExp_();
-        }else if(token.word.equals(";")||token.word.equals("+")||token.word.equals("-")||token.word.equals(")")){
+        }else if(token.word.equals(";")||token.word.equals("+")||token.word.equals("-")||token.word.equals(")")||token.word.equals(",")){
             currentToken--;
         }else{
             throw new Exception("Wrong in MulExp_()");
@@ -243,10 +273,20 @@ public class Parser {
         if(token.id.equals("UnaryOp")){
             expression.append(token.word);
             UnaryExp();
-        }
-        else if(token.id.equals("Num")){
+        } else if(token.id.equals("Num")){
             expression.append(token.word);
-        }else if(token.word.equals("(")){
+        } else if(token.id.equals("Ident")){
+            for(Variable i:variable_list){
+                if(token.word.equals(i.name)){
+                    if(!i.assigned){
+                        throw new Exception("variable in UnaryExp hasn't been assigned");
+                    }
+                    expression.append(i.value);
+                    return;
+                }
+            }
+            throw new Exception("variable in UnaryExp hasn't been declared");
+        } else if(token.word.equals("(")){
             expression.append(token.word);
             Exp();
             if(getNextToken().word.equals(")")){

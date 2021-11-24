@@ -101,6 +101,9 @@ public class Calculator {
             String a=numberArr.get(0);
             if(a.startsWith("v")){
                 a=a.replace("v","%l");
+                System.out.printf("\n\t%%t%d = load i32, i32* %s",registerNum,a);
+                a="%t"+registerNum;
+                registerNum++;
             }else if(a.startsWith("t")){
                 a=a.replace("t","%t");
             }

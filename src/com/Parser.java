@@ -111,7 +111,7 @@ public class Parser {
         Exp();
         expValue=calculator.compute(expression.toString());
         expression=new StringBuilder("");
-        if(expValue.length()>1&&expValue.charAt(2)=='l');{
+        if(expValue.length()>1&&expValue.charAt(1)=='l');{
             System.out.printf("\n\t%%l%d = load i32, i32* %s",registerNum,expValue);
             expValue="%l"+registerNum;
             registerNum++;

@@ -124,7 +124,7 @@ public class Calculator {
                 //result = (int)(numberArr.get(index)/numberArr.get(index+1));
                 //System.out.printf("-------------%f / %f \n",numberArr.get(index),numberArr.get(index+1));
             }else if("e".equals(calStrArr.get(index))){
-                opt="rem";
+                opt="srem";
             }
             String a=numberArr.get(index);
             String b=numberArr.get(index+1);

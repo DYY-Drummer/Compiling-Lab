@@ -111,6 +111,7 @@ public class Parser {
         Exp();
         expValue=calculator.compute(expression.toString());
         expression=new StringBuilder("");
+        exp_format();
         System.out.printf("\n\tcall void @putint(i32 %s)",expValue);
         currentToken+=2;
     }
@@ -155,6 +156,7 @@ public class Parser {
         //var.value=expValue;
         register_map.put(varName,registerNum);
         System.out.printf("\n\t%%l%d = alloca i32",registerNum);
+        exp_format();
         System.out.printf("\n\tstore i32 %s, i32* %%l%d",expValue,registerNum);
         registerNum++;
 
@@ -201,7 +203,7 @@ public class Parser {
         Variable var=new Variable(name,false);
         if(getNextToken().word.equals("=")){
             InitVal();
-
+            exp_format();
             var.assigned=true;
             System.out.printf("\n\tstore i32 %s, i32* %%l%d",expValue,reg);
         }else{
@@ -219,9 +221,9 @@ public class Parser {
         if(token.word.equals("return")){
             Exp();
             expValue=calculator.compute(expression.toString());
-            //System.out.printf("\ti32 %d",calculator.compute(expression.toString()));
             expression=new StringBuilder("");
-                System.out.printf("\n\tret i32 %s",expValue);
+            exp_format();
+            System.out.printf("\n\tret i32 %s",expValue);
 
         } else if(token_list.get(currentToken+1).word.equals("=")){
             if(!register_map.containsKey(token.word)){
@@ -243,7 +245,7 @@ public class Parser {
             Exp();
             expValue=calculator.compute(expression.toString());
             expression=new StringBuilder("");
-
+            exp_format();
             System.out.printf("\n\tstore i32 %s, i32* %%l%d",expValue,reg);
             var.assigned=true;
 
@@ -326,4 +328,16 @@ public class Parser {
             throw new Exception("UnaryExp error");
         }
     }
+    public void exp_format(){
+        if(expValue.startsWith("v")){
+            expValue=expValue.replace("v","%l");
+            System.out.printf("\n\t%%l%d = load i32, i32* %s",registerNum,expValue);
+            expValue="%l"+registerNum;
+            registerNum++;
+        }else if(expValue.startsWith("t")){
+            expValue=expValue.replace("t","%t");
+        }
+    }
 }
+
+

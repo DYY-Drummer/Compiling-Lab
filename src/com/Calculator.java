@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Calculator {
-    int registerNum;
+    static int registerNum=1;
     public String compute(String calStr){
-        registerNum=1;
         //System.out.println("------"+calStr);
         calStr=removeSerialSign(calStr);
         //System.out.println("------"+calStr);

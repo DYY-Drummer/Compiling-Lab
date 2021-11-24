@@ -226,9 +226,13 @@ public class Parser {
             expValue=calculator.compute(expression.toString());
             //System.out.printf("\ti32 %d",calculator.compute(expression.toString()));
             expression=new StringBuilder("");
-            System.out.printf("\n\t%%l%d = load i32, i32* %s",registerNum,expValue);
-            System.out.printf("\n\tret i32 %%l%d",registerNum);
-            registerNum++;
+            if(expValue.charAt(0)!='%'){
+                System.out.printf("\n\tret i32 %s",expValue);
+            }else{
+                System.out.printf("\n\t%%l%d = load i32, i32* %s",registerNum,expValue);
+                System.out.printf("\n\tret i32 %%l%d",registerNum);
+                registerNum++;
+            }
         } else if(token_list.get(currentToken+1).word.equals("=")){
             if(!register_map.containsKey(token.word)){
                 throw new Exception("variable in Stmt hasn't been declared");

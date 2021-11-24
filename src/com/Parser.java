@@ -111,6 +111,11 @@ public class Parser {
         Exp();
         expValue=calculator.compute(expression.toString());
         expression=new StringBuilder("");
+        if(expValue.length()>1&&expValue.charAt(2)=='l');{
+            System.out.printf("%%l%d = load i32, i32* %s",registerNum,expValue);
+            expValue="%l"+registerNum;
+            registerNum++;
+        }
         System.out.printf("\n\tcall void @putint(i32 %s)",expValue);
         currentToken+=2;
     }

@@ -12,7 +12,7 @@ public class Test {
             PrintStream outputStream=new PrintStream(output);
             System.setOut(outputStream);
             System.out.println("declare i32 @getch()\n" +
-                    "declare void @putch(i32)\n"+"declare void @putint(i32)\n");
+                    "declare void @putch(i32)\n"+"declare void @putint(i32)\n"+"declare void @getint()\n");
             Tokenizer tokenizer=new Tokenizer();
 
             String temp;

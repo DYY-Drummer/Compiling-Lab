@@ -11,7 +11,7 @@ public class Parser {
     Calculator calculator=new Calculator();
     StringBuilder expression=new StringBuilder("");
     int currentToken;
-    int expValue;
+    String expValue;
     int registerNum;
     boolean constInit;
     public Token getNextToken()throws Exception{
@@ -86,7 +86,7 @@ public class Parser {
             currentToken--;
             BlockItem();
         }
-        System.out.print("}");
+        System.out.print("\n}");
     }
     public void BlockItem()throws Exception{
         Token token=getNextToken();
@@ -151,7 +151,13 @@ public class Parser {
         }
         Variable var=new Variable(varName,true);
         ConstInitVal();
-        var.value=expValue;
+        //----------------------------------------------------------------------------------------------
+        //var.value=expValue;
+        register_map.put(varName,registerNum);
+        System.out.printf("\n\t%%l%d = alloca i32",registerNum);
+        System.out.printf("\n\tstore i32 %s, i32* %%l%d",expValue,registerNum);
+        registerNum++;
+
         var.assigned=true;
         variable_list.add(var);
 
@@ -195,9 +201,9 @@ public class Parser {
         Variable var=new Variable(name,false);
         if(getNextToken().word.equals("=")){
             InitVal();
-            var.value=expValue;
+
             var.assigned=true;
-            System.out.printf("\n\tstore i32 %d, i32* %%l%d",expValue,reg);
+            System.out.printf("\n\tstore i32 %s, i32* %%l%d",expValue,reg);
         }else{
             currentToken--;
         }
@@ -215,18 +221,14 @@ public class Parser {
             expValue=calculator.compute(expression.toString());
             //System.out.printf("\ti32 %d",calculator.compute(expression.toString()));
             expression=new StringBuilder("");
-            System.out.printf("\n\tret i32 %d",expValue);
+            System.out.printf("\n\t%%l%d = load i32, i32* %s",registerNum,expValue);
+            System.out.printf("\n\tret i32 %%l%d",registerNum);
+            registerNum++;
         } else if(token_list.get(currentToken+1).word.equals("=")){
             if(!register_map.containsKey(token.word)){
                 throw new Exception("variable in Stmt hasn't been declared");
             }
-            int reg=register_map.get(token.word);
             String name=token.word;
-            currentToken++;
-            Exp();
-            expValue=calculator.compute(expression.toString());
-            expression=new StringBuilder("");
-            System.out.printf("\n\tstore i32 %d, i32* %%l%d",expValue,reg);
             Variable var = new Variable("temp",false);
             for(Variable i:variable_list){
                 if(i.name.equals(name)){
@@ -234,7 +236,16 @@ public class Parser {
                     break;
                 }
             }
-            var.value=expValue;
+            if(var.isConst){
+                throw new Exception("Can't change the value of Const variable");
+            }
+            int reg=register_map.get(token.word);
+            currentToken++;
+            Exp();
+            expValue=calculator.compute(expression.toString());
+            expression=new StringBuilder("");
+
+            System.out.printf("\n\tstore i32 %s, i32* %%l%d",expValue,reg);
             var.assigned=true;
 
         } else{
@@ -296,10 +307,10 @@ public class Parser {
                     if(constInit&&!i.isConst){
                         throw new Exception("Const val can't be init by val");
                     }
-                    if(!i.assigned){
+                    if((!i.assigned)){
                         throw new Exception("variable in UnaryExp hasn't been assigned");
                     }
-                    expression.append(i.value);
+                    expression.append("v"+register_map.get(i.name));
                     return;
                 }
             }

@@ -103,9 +103,9 @@ public class Tokenizer {
             word.append(temp[i]);
         }
         String t=word.toString();
-        if(t.equals("putint")){
+        if(t.equals("putint")||t.equals("getint")||t.equals("putch")||t.equals("getch")){
             token_list.add(new Token("Func",t));
-        } else if(!isKeyword(t)){
+        }else if(!isKeyword(t)){
             //System.out.print("Ident("+word.toString()+")\n");
             token_list.add(new Token("Ident",word.toString()));
         }

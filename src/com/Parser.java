@@ -111,11 +111,6 @@ public class Parser {
         Exp();
         expValue=calculator.compute(expression.toString());
         expression=new StringBuilder("");
-        if(expValue.length()>1&&expValue.charAt(1)=='l');{
-            System.out.printf("\n\t%%l%d = load i32, i32* %s",registerNum,expValue);
-            expValue="%l"+registerNum;
-            registerNum++;
-        }
         System.out.printf("\n\tcall void @putint(i32 %s)",expValue);
         currentToken+=2;
     }
@@ -226,13 +221,8 @@ public class Parser {
             expValue=calculator.compute(expression.toString());
             //System.out.printf("\ti32 %d",calculator.compute(expression.toString()));
             expression=new StringBuilder("");
-            if(expValue.charAt(0)!='%'||expValue.charAt(1)!='l'){
                 System.out.printf("\n\tret i32 %s",expValue);
-            }else{
-                System.out.printf("\n\t%%l%d = load i32, i32 %s",registerNum,expValue);
-                System.out.printf("\n\tret i32 %%l%d",registerNum);
-                registerNum++;
-            }
+
         } else if(token_list.get(currentToken+1).word.equals("=")){
             if(!register_map.containsKey(token.word)){
                 throw new Exception("variable in Stmt hasn't been declared");

@@ -111,7 +111,7 @@ public class Parser {
         Exp();
         expValue=calculator.compute(expression.toString());
         expression=new StringBuilder("");
-        System.out.printf("\n\tcall void @putint(i32 %d)",expValue);
+        System.out.printf("\n\tcall void @putint(i32 %s)",expValue);
         currentToken+=2;
     }
     public void Decl()throws Exception{

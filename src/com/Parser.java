@@ -226,7 +226,7 @@ public class Parser {
             expValue=calculator.compute(expression.toString());
             //System.out.printf("\ti32 %d",calculator.compute(expression.toString()));
             expression=new StringBuilder("");
-            if(expValue.length()>1&&expValue.charAt(1)!='l'){
+            if(expValue.charAt(0)!='%'||expValue.charAt(1)!='l'){
                 System.out.printf("\n\tret i32 %s",expValue);
             }else{
                 System.out.printf("\n\t%%l%d = load i32, i32* %s",registerNum,expValue);

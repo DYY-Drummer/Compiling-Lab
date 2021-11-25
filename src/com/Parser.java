@@ -229,6 +229,11 @@ public class Parser {
             exp_format();
             System.out.printf("\n\tret i32 %s",expValue);
 
+        } else if(token.word.equals("if")){
+            if(!getNextToken().word.equals("(")){
+                throw new Exception("Missing LPar in if Stmt");
+            }
+
         } else if(token_list.get(currentToken+1).word.equals("=")){
             if(!register_map.containsKey(token.word)){
                 throw new Exception("variable in Stmt hasn't been declared");

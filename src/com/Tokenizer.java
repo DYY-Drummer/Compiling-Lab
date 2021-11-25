@@ -120,7 +120,7 @@ public class Tokenizer {
     {
         if(str!=null){
             if ("if".equals(str)) {
-                System.out.println("If");
+                token_list.add(new Token("Keyword","if"));
             } else if ("return".equals(str)) {
                 token_list.add(new Token("Keyword","return"));
             } else if("int".equals(str)) {

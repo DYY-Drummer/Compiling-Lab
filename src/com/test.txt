@@ -1,17 +1,10 @@
-int main () {
-    int a;
-    int b;
-    int c;
-    int d;
-    int result;
-    a = 5;
-    b = 5;
-    c = 1;
-    d = -2;
-    result = (d * 1 / 2)  + (a - b) - -(c + 3) % 2;
-    putint(result);
-    result = ((d % 2 + 67) + -(a - b) - -((c + 2) % 2));
-    result = result + 3;
-    putint(result);
+int main() {
+    int a = getch(), b;
+    b = getch();
+    putch(a);
+    putch(b);
+    putch(10);
+    putch(a - 16);
+    putch(b + 6);
     return 0;
 }

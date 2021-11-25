@@ -101,20 +101,14 @@ public class Parser {
         }else if(token.id.equals("Func")){
             if(token.word.equals("putint")){
                 putint();
+            }else if(token.word.equals("putch")){
+                putch();
             }
         }else{System.out.println("-------"+token.word);
             throw new Exception("Wrong in BlockItem");
         }
     }
-    public void putint()throws Exception{
-        currentToken++;
-        Exp();
-        expValue=calculator.compute(expression.toString());
-        expression=new StringBuilder("");
-        exp_format();
-        System.out.printf("\n\tcall void @putint(i32 %s)",expValue);
-        currentToken+=2;
-    }
+
     public void Decl()throws Exception{
         Token token=getNextToken();
         if(token.word.equals("const")){
@@ -152,8 +146,6 @@ public class Parser {
         }
         Variable var=new Variable(varName,true);
         ConstInitVal();
-        //----------------------------------------------------------------------------------------------
-        //var.value=expValue;
         register_map.put(varName,registerNum);
         System.out.printf("\n\t%%l%d = alloca i32",registerNum);
         exp_format();
@@ -202,10 +194,22 @@ public class Parser {
         register_map.put(name,reg);
         Variable var=new Variable(name,false);
         if(getNextToken().word.equals("=")){
-            InitVal();
-            exp_format();
-            var.assigned=true;
-            System.out.printf("\n\tstore i32 %s, i32* %%l%d",expValue,reg);
+            token=getNextToken();
+            if(token.id.equals("Func")){
+                if(token.word.equals("getint")){
+                    getint(reg);
+                }else if(token.word.equals("getch")){
+                    getch(reg);
+                }else{
+                    throw new Exception("wrong Func in VarDef");
+                }
+            }else {
+                currentToken--;
+                InitVal();
+                exp_format();
+                System.out.printf("\n\tstore i32 %s, i32* %%l%d", expValue, reg);
+            }
+            var.assigned = true;
         }else{
             currentToken--;
         }
@@ -242,13 +246,24 @@ public class Parser {
             }
             int reg=register_map.get(token.word);
             currentToken++;
-            Exp();
-            expValue=calculator.compute(expression.toString());
-            expression=new StringBuilder("");
-            exp_format();
-            System.out.printf("\n\tstore i32 %s, i32* %%l%d",expValue,reg);
+            token=getNextToken();
+            if(token.id.equals("Func")){
+                if(token.word.equals("getint")){
+                    getint(reg);
+                }else if(token.word.equals("getch")){
+                    getch(reg);
+                }else{
+                    throw new Exception("wrong Func in Stmt");
+                }
+            }else{
+                currentToken--;
+                Exp();
+                expValue=calculator.compute(expression.toString());
+                expression=new StringBuilder("");
+                exp_format();
+                System.out.printf("\n\tstore i32 %s, i32* %%l%d",expValue,reg);
+            }
             var.assigned=true;
-
         } else{
             Exp();
         }
@@ -337,6 +352,36 @@ public class Parser {
         }else if(expValue.startsWith("t")){
             expValue=expValue.replace("t","%t");
         }
+    }
+    public void putch()throws Exception{
+        currentToken++;
+        Exp();
+        expValue=calculator.compute(expression.toString());
+        expression=new StringBuilder("");
+        exp_format();
+        System.out.printf("\n\tcall void @putch(i32 %s)",expValue);
+        currentToken+=2;
+    }
+    public void putint()throws Exception{
+        currentToken++;
+        Exp();
+        expValue=calculator.compute(expression.toString());
+        expression=new StringBuilder("");
+        exp_format();
+        System.out.printf("\n\tcall void @putint(i32 %s)",expValue);
+        currentToken+=2;
+    }
+    public void getint(int reg){
+        System.out.printf("\n\t%%l%d = call i32 @getint()",registerNum);
+        System.out.printf("\n\tstore i32 %%l%d, i32* %%l%d",registerNum,reg);
+        registerNum++;
+        currentToken+=2;
+    }
+    public void getch(int reg){
+        System.out.printf("\n\t%%l%d = call i32 @getch()",registerNum);
+        System.out.printf("\n\tstore i32 %%l%d, i32* %%l%d",registerNum,reg);
+        registerNum++;
+        currentToken+=2;
     }
 }
 

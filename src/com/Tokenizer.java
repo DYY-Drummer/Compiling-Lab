@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class Tokenizer {
     public static ArrayList<Token> token_list=new ArrayList<>();
-    String[] opt={"=",";","(",")","{","}","+","-","*","/", "%","<",">",","};
+    String[] opt={"=",";","(",")","{","}","+","-","*","/", "%","<",">",",","|","&","!"};
     boolean isComment=false;
     boolean nextLine;
     public void analyze(String str) throws Exception {
@@ -121,6 +121,8 @@ public class Tokenizer {
         if(str!=null){
             if ("if".equals(str)) {
                 token_list.add(new Token("Keyword","if"));
+            } else if("else".equals(str)) {
+                token_list.add(new Token("Keyword","else"));
             } else if ("return".equals(str)) {
                 token_list.add(new Token("Keyword","return"));
             } else if("int".equals(str)) {
@@ -218,23 +220,15 @@ public class Tokenizer {
     public void operator(String str) throws Exception {
 
         if (str.charAt(0)=='=') {
-            token_list.add(new Token("=","="));
-            /*if(str.length()>1){
-                if(str.charAt(1)=='='){
-                    System.out.println("Eq");
-                    if(str.length()>2){
-                        goNext(str.substring(2));
-                    }
-                    return;
-                }
-                else {
-                    System.out.println("Assign");
-                    goNext(str.substring(1));
+            if(str.length()>1&&str.charAt(1)=='='){
+                token_list.add(new Token("Eq","=="));
+                if(str.length()>2){
+                    goNext(str.substring(2));
                 }
                 return;
             }else{
-                System.out.println("Assign");
-            }*/
+                token_list.add(new Token("Assign","="));
+            }
         } else if (str.charAt(0)==';') {
             token_list.add(new Token(";",";"));
         } else if (str.charAt(0)=='(') {
@@ -276,14 +270,60 @@ public class Tokenizer {
             else {
                 token_list.add(new Token("Div", "/"));
             }
-        } else if(str.charAt(0)=='%'){
+        } else if (str.charAt(0)=='%'){
           token_list.add(new Token("%","%"));
-        } else if(str.charAt(0)==','){
+        } else if (str.charAt(0)==','){
             token_list.add(new Token(",",","));
+        } else if (str.charAt(0)=='|') {
+            if(str.length()>1&&str.charAt(1)=='|'){
+                token_list.add(new Token("Or","||"));
+                if(str.length()>2){
+                    goNext(str.substring(2));
+                }
+                return;
+            } else {
+                throw new Exception("Wrong Operator of single '|'");
+            }
+        } else if (str.charAt(0)=='&') {
+            if(str.length()>1&&str.charAt(1)=='&'){
+                token_list.add(new Token("And","&&"));
+                if(str.length()>2){
+                    goNext(str.substring(2));
+                }
+                return;
+            } else {
+                throw new Exception("Wrong Operator of single '&'");
+            }
+        } else if (str.charAt(0)=='!') {
+            if(str.length()>1&&str.charAt(1)=='='){
+                token_list.add(new Token("nEq","!="));
+                if(str.length()>2){
+                    goNext(str.substring(2));
+                }
+                return;
+            } else {
+                token_list.add(new Token("Not","!"));
+            }
         } else if (str.charAt(0)=='<') {
-            System.out.println("Lt");
+            if(str.length()>1&&str.charAt(1)=='='){
+                token_list.add(new Token("Lte","<="));
+                if(str.length()>2){
+                    goNext(str.substring(2));
+                }
+                return;
+            }else{
+                token_list.add(new Token("Lt","<"));
+            }
         } else if (str.charAt(0)=='>') {
-            System.out.println("Gt");
+            if(str.length()>1&&str.charAt(1)=='='){
+                token_list.add(new Token("Gte",">="));
+                if(str.length()>2){
+                    goNext(str.substring(2));
+                }
+                return;
+            }else{
+                token_list.add(new Token("Gt",">"));
+            }
         }
         if(str.length()>1){
             goNext(str.substring(1));

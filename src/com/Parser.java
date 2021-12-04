@@ -10,10 +10,13 @@ public class Parser {
     Map<String,Integer> register_map=new HashMap<>();
     Calculator calculator=new Calculator();
     StringBuilder expression=new StringBuilder("");
+    StringBuilder cond_exp=new StringBuilder("");
     int currentToken;
     String expValue;
     int registerNum;
     boolean constInit;
+    int condLevel;
+    int count_Not;
     public Token getNextToken()throws Exception{
         currentToken++;
         if(currentToken>token_list.size()-1){
@@ -37,6 +40,7 @@ public class Parser {
 //        }
         currentToken=-1;
         registerNum=1;
+        condLevel=0;
         FuncDef();
     }
     public void FuncDef() throws Exception{
@@ -231,7 +235,20 @@ public class Parser {
 
         } else if(token.word.equals("if")){
             if(!getNextToken().word.equals("(")){
-                throw new Exception("Missing LPar in if Stmt");
+                throw new Exception("Missing LPar of if Stmt");
+            }
+            Cond();
+            if(!getNextToken().word.equals(")")){
+                throw new Exception("Missing RPar of if Stmt");
+            }
+            condLevel++;
+            System.out.printf("true_%d",condLevel);
+            Stmt();
+            if(getNextToken().word.equals("else")){
+                System.out.printf("false_%d",condLevel);
+                Stmt();
+            }else {
+                currentToken--;
             }
 
         } else if(token_list.get(currentToken+1).word.equals("=")){
@@ -269,13 +286,73 @@ public class Parser {
                 System.out.printf("\n\tstore i32 %s, i32* %%l%d",expValue,reg);
             }
             var.assigned=true;
+        }  else if(token.word.equals("{")){
+            currentToken--;
+            Block();
         } else{
             Exp();
+            if(getNextToken().word.equals(";")){
+                throw new Exception("Missing ';' after Exp in Stmt");
+            }
         }
         if(!getNextToken().word.equals(";")){
             throw new Exception("Missing ';' in Stmt");
         }
 
+    }
+    public void Cond()throws Exception{
+
+        LOrExp();
+    }
+    public void LOrExp()throws Exception{
+        LAndExp();
+        LOrExp_();
+    }
+    public void LOrExp_()throws Exception{
+        if(getNextToken().word.equals("||")){
+            LAndExp();
+            LOrExp_();
+        }else{
+            currentToken--;
+        }
+    }
+    public void LAndExp()throws Exception{
+        EqExp();
+        LAndExp_();
+    }
+    public void LAndExp_()throws Exception{
+        if(getNextToken().word.equals("&&")){
+            EqExp();
+            LAndExp_();
+        }else{
+            currentToken--;
+        }
+    }
+    public void EqExp()throws Exception{
+        RelExp();
+        EqExp_();
+    }
+    public void EqExp_()throws Exception{
+        Token token=getNextToken();
+        if(token.word.equals("==")||token.word.equals("!=")){
+            RelExp();
+            EqExp_();
+        }else {
+            currentToken--;
+        }
+    }
+    public void RelExp()throws Exception{
+        AddExp();
+        RelExp_();
+    }
+    public void RelExp_()throws Exception{
+        Token token=getNextToken();
+        if(token.word.equals("<")||token.word.equals("<=")||token.word.equals(">")||token.word.equals(">=")){
+            AddExp();
+            RelExp_();
+        }else {
+            currentToken--;
+        }
     }
     public void Exp()throws Exception{
         AddExp();

@@ -55,7 +55,7 @@ public class Parser {
         label_or=1;
         label_and=1;
         label_stmt=1;
-        isCondStmt=false;
+
         FuncDef();
     }
     public void FuncDef() throws Exception{
@@ -242,8 +242,7 @@ public class Parser {
             }
 
         } else if(token.word.equals("if")){
-            if(!isCondStmt){
-                isCondStmt=true;
+            if(!token_list.get(currentToken-1).word.equals("else")){
                 stack_label_cond.addLast(label_cond);
                 label_cond++;
             }
@@ -267,12 +266,11 @@ public class Parser {
                     label_if++;
                     currentToken--;
                     Stmt();
-                    isCondStmt=false;
+                    System.out.printf("\n\nLabel_cond_%d:",stack_label_cond.getLast());
+                    stack_label_cond.removeLast();
                 }else{
                     currentToken--;
                     Stmt();
-                    System.out.printf("\n\nLabel_cond_%d:",stack_label_cond.getLast());
-                    stack_label_cond.removeLast();
                 }
             }else {
                 System.out.printf("\n\nLabel_if_%d:",label_if);

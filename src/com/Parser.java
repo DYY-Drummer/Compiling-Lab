@@ -25,7 +25,6 @@ public class Parser {
     int label_and;
     int label_stmt;
     String and_result;
-    boolean isCondStmt;
     int count_Not;
     public Token getNextToken()throws Exception{
         currentToken++;
@@ -245,11 +244,12 @@ public class Parser {
             if(!token_list.get(currentToken-1).word.equals("else")){
                 stack_label_cond.addLast(label_cond);
                 label_cond++;
+                System.out.printf("\n\tbr label %%Label_if_%d",label_if);
             }
             if(!getNextToken().word.equals("(")){
                 throw new Exception("Missing LPar of if Cond");
             }
-            System.out.printf("\n\nLabelif%d:",label_if);
+            System.out.printf("\n\nLabel_if_%d:",label_if);
             label_if++;
             Cond();
             if(!getNextToken().word.equals(")")){
@@ -266,6 +266,7 @@ public class Parser {
                     label_if++;
                     currentToken--;
                     Stmt();
+                    System.out.printf("\n\tbr label %%Label_cond_%d",stack_label_cond.getLast());
                     System.out.printf("\n\nLabel_cond_%d:",stack_label_cond.getLast());
                     stack_label_cond.removeLast();
                 }else{
@@ -344,7 +345,7 @@ public class Parser {
         System.out.printf("\n\nLabel_or_%d:",label_or);
         label_or++;
         LOrExp_();
-        System.out.printf("\n\tbr label %%label_if_%d",label_if);
+        System.out.printf("\n\tbr label %%Label_if_%d",label_if);
     }
     public void LOrExp_()throws Exception{
         if(getNextToken().word.equals("||")){
@@ -361,7 +362,7 @@ public class Parser {
         System.out.printf("\n\nLabel_and_%d:",label_and);
         label_and++;
         LAndExp_();
-        System.out.printf("\n\tbr i1 %s,label %%label_stmt_%d, label %%label_or_%d",and_result,label_stmt,label_or);
+        System.out.printf("\n\tbr i1 %s,label %%Label_stmt_%d, label %%Label_or_%d",and_result,label_stmt,label_or);
 
     }
     public void LAndExp_()throws Exception{
@@ -385,7 +386,7 @@ public class Parser {
             registerNum++;
         }
         count_Not=0;
-        System.out.printf("\n\tbr i1 %s,label %%label_and_%d, label %%label_or_%d",and_result,label_and,label_or);
+        System.out.printf("\n\tbr i1 %s,label %%Label_and_%d, label %%Label_or_%d",and_result,label_and,label_or);
 
     }
     public void EqExp_()throws Exception{

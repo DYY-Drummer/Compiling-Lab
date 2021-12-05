@@ -16,7 +16,7 @@ public class Parser {
     int currentToken;
     String expValue;
     int registerNum;
-
+    static int registerNum_temp;
     boolean constInit;
     int label_cond;
     LinkedList<Integer> stack_label_cond=new LinkedList<>();
@@ -49,6 +49,7 @@ public class Parser {
 //        }
         currentToken=-1;
         registerNum=1;
+        registerNum_temp=1;
         label_cond=1;
         label_if=1;
         label_or=1;

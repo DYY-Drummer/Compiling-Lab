@@ -4,13 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Calculator {
-    static int registerNum=1;
+    int registerNum=Parser.registerNum_temp;
     public String compute(String calStr){
         //System.out.println("------"+calStr);
         calStr=removeSerialSign(calStr);
         //System.out.println("------"+calStr);
         try {
-            return calBase(calStr);
+            String result=calBase(calStr);
+            Parser.registerNum_temp=registerNum;
+            return result;
         } catch (Exception e) {
             System.out.println("wrong expression:"+e);
             return "-0xFFFFFFF";

@@ -13,11 +13,13 @@ import java.util.List;
  */
 
 public class CondCalculator {
-    static int registerNum=1;
+    int registerNum=Parser.registerNum_temp;
     public String compute(String calStr){
         //System.out.println("\n------"+calStr);
         try {
-            return calBase(calStr);
+            String result=calBase(calStr);
+            Parser.registerNum_temp=registerNum;
+            return result;
         } catch (Exception e) {
             System.out.println("wrong expression:"+e);
             return "-0xFFFFFFF";

@@ -2,6 +2,7 @@ package com;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 public class Parser {
@@ -9,13 +10,22 @@ public class Parser {
     ArrayList<Variable> variable_list=new ArrayList<>();
     Map<String,Integer> register_map=new HashMap<>();
     Calculator calculator=new Calculator();
+    CondCalculator condCalculator=new CondCalculator();
     StringBuilder expression=new StringBuilder("");
     StringBuilder cond_exp=new StringBuilder("");
     int currentToken;
     String expValue;
     int registerNum;
+
     boolean constInit;
-    int condLevel;
+    int label_cond;
+    LinkedList<Integer> stack_label_cond=new LinkedList<>();
+    int label_if;
+    int label_or;
+    int label_and;
+    int label_stmt;
+    String and_result;
+    boolean isCondStmt;
     int count_Not;
     public Token getNextToken()throws Exception{
         currentToken++;
@@ -40,7 +50,12 @@ public class Parser {
 //        }
         currentToken=-1;
         registerNum=1;
-        condLevel=0;
+        label_cond=1;
+        label_if=1;
+        label_or=1;
+        label_and=1;
+        label_stmt=1;
+        isCondStmt=false;
         FuncDef();
     }
     public void FuncDef() throws Exception{
@@ -59,7 +74,9 @@ public class Parser {
         else {
             throw new Exception("wrong def format");
         }
+        System.out.print("{");
         Block();
+        System.out.print("\n}");
     }
     public void FuncType() throws Exception{
         Token token=getNextToken();
@@ -77,11 +94,8 @@ public class Parser {
         }
     }
     public void Block() throws Exception{
-        if(getNextToken().word.equals("{")){
-            System.out.print("{");
-        }
-        else {
-            throw new Exception("wrong LBrace format");
+        if(!getNextToken().word.equals("{")){
+            throw new Exception("Missing LBrace in Block");
         }
         while(!getNextToken().word.equals("}")){
             /*for(int i=currentToken;i<currentToken+6;i++){
@@ -90,26 +104,17 @@ public class Parser {
             currentToken--;
             BlockItem();
         }
-        System.out.print("\n}");
     }
     public void BlockItem()throws Exception{
         Token token=getNextToken();
         if(token.word.equals("}")){
             currentToken--;
-        }else if(token.id.equals("Keyword")&&!token.word.equals("return")){
+        }else if(token.word.equals("const")||token.word.equals("int")){
             currentToken--;
             Decl();
-        }else if(token.id.equals("Ident")||token.word.equals("return")){
+        }else{
             currentToken--;
             Stmt();
-        }else if(token.id.equals("Func")){
-            if(token.word.equals("putint")){
-                putint();
-            }else if(token.word.equals("putch")){
-                putch();
-            }
-        }else{System.out.println("-------"+token.word);
-            throw new Exception("Wrong in BlockItem");
         }
     }
 
@@ -232,22 +237,46 @@ public class Parser {
             expression=new StringBuilder("");
             exp_format();
             System.out.printf("\n\tret i32 %s",expValue);
+            if(!getNextToken().word.equals(";")){
+                throw new Exception("Missing ';' after Exp in return");
+            }
 
         } else if(token.word.equals("if")){
-            if(!getNextToken().word.equals("(")){
-                throw new Exception("Missing LPar of if Stmt");
+            if(!isCondStmt){
+                isCondStmt=true;
+                stack_label_cond.addLast(label_cond);
+                label_cond++;
             }
+            if(!getNextToken().word.equals("(")){
+                throw new Exception("Missing LPar of if Cond");
+            }
+            System.out.printf("\n\nLabel_if_%d:",label_if);
+            label_if++;
             Cond();
             if(!getNextToken().word.equals(")")){
-                throw new Exception("Missing RPar of if Stmt");
+                throw new Exception("Missing RPar of if Cond");
             }
-            condLevel++;
-            System.out.printf("true_%d",condLevel);
+            System.out.printf("\n\nLabel_stmt_%d:",label_stmt);
+            label_stmt++;
             Stmt();
+            System.out.printf("\n\tbr label %%Label_cond_%d",stack_label_cond.getLast());
             if(getNextToken().word.equals("else")){
-                System.out.printf("false_%d",condLevel);
-                Stmt();
+                if(!getNextToken().word.equals("if"))
+                {
+                    System.out.printf("\n\nLabel_if_%d:",label_if);
+                    label_if++;
+                    currentToken--;
+                    Stmt();
+                    isCondStmt=false;
+                }else{
+                    currentToken--;
+                    Stmt();
+                    System.out.printf("\n\nLabel_cond_%d:",stack_label_cond.getLast());
+                    stack_label_cond.removeLast();
+                }
             }else {
+                System.out.printf("\n\nLabel_if_%d:",label_if);
+                label_if++;
                 currentToken--;
             }
 
@@ -286,31 +315,44 @@ public class Parser {
                 System.out.printf("\n\tstore i32 %s, i32* %%l%d",expValue,reg);
             }
             var.assigned=true;
-        }  else if(token.word.equals("{")){
+            if(!getNextToken().word.equals(";")){
+                throw new Exception("Missing ';' after Exp in Assign");
+            }
+        } else if(token.id.equals("Func")){
+            if(token.word.equals("putint")){
+                putint();
+            }else if(token.word.equals("putch")){
+                putch();
+            }
+            if(!getNextToken().word.equals(";")){
+                throw new Exception("Missing ';' after Func in Stmt");
+            }
+        } else if(token.word.equals("{")){
             currentToken--;
             Block();
         } else{
             Exp();
-            if(getNextToken().word.equals(";")){
+            if(!getNextToken().word.equals(";")){
                 throw new Exception("Missing ';' after Exp in Stmt");
             }
-        }
-        if(!getNextToken().word.equals(";")){
-            throw new Exception("Missing ';' in Stmt");
         }
 
     }
     public void Cond()throws Exception{
-
         LOrExp();
     }
     public void LOrExp()throws Exception{
         LAndExp();
+        System.out.printf("\n\nLabel_or_%d:",label_or);
+        label_or++;
         LOrExp_();
+        System.out.printf("\n\tbr label %%label_if_%d",label_if);
     }
     public void LOrExp_()throws Exception{
         if(getNextToken().word.equals("||")){
             LAndExp();
+            System.out.printf("\n\nLabel_or_%d:",label_or);
+            label_or++;
             LOrExp_();
         }else{
             currentToken--;
@@ -318,11 +360,17 @@ public class Parser {
     }
     public void LAndExp()throws Exception{
         EqExp();
+        System.out.printf("\n\nLabel_and_%d:",label_and);
+        label_and++;
         LAndExp_();
+        System.out.printf("\n\tbr i1 %s,label %%label_stmt_%d, label %%label_or_%d",and_result,label_stmt,label_or);
+
     }
     public void LAndExp_()throws Exception{
         if(getNextToken().word.equals("&&")){
             EqExp();
+            System.out.printf("\n\nLabel_and_%d:",label_and);
+            label_and++;
             LAndExp_();
         }else{
             currentToken--;
@@ -331,10 +379,25 @@ public class Parser {
     public void EqExp()throws Exception{
         RelExp();
         EqExp_();
+        and_result= condCalculator.compute(cond_exp.toString());
+        cond_exp=new StringBuilder("");
+        if(count_Not%2==1){
+            System.out.printf("\n\t%%l%d = icmp eq i1 %s, 0",registerNum,and_result);
+            and_result="%l"+registerNum;
+            registerNum++;
+        }
+        count_Not=0;
+        System.out.printf("\n\tbr i1 %s,label %%label_and_%d, label %%label_or_%d",and_result,label_and,label_or);
+
     }
     public void EqExp_()throws Exception{
         Token token=getNextToken();
         if(token.word.equals("==")||token.word.equals("!=")){
+            if(token.word.equals("==")){
+                cond_exp.append("a");
+            }else {
+                cond_exp.append("b");
+            }
             RelExp();
             EqExp_();
         }else {
@@ -343,12 +406,33 @@ public class Parser {
     }
     public void RelExp()throws Exception{
         AddExp();
+        expValue=calculator.compute(expression.toString());
+        expression=new StringBuilder("");
+        exp_format();
+        System.out.printf("\n\t%%l%d = %s", registerNum, expValue);
+        cond_exp.append("%l"+registerNum);
+        registerNum++;
         RelExp_();
     }
     public void RelExp_()throws Exception{
         Token token=getNextToken();
         if(token.word.equals("<")||token.word.equals("<=")||token.word.equals(">")||token.word.equals(">=")){
+            if(token.word.equals("<")){
+                cond_exp.append("c");
+            }else if (token.word.equals(">")){
+                cond_exp.append("d");
+            }else if(token.word.equals("<=")){
+                cond_exp.append("e");
+            }else {
+                cond_exp.append("f");
+            }
             AddExp();
+            expValue=calculator.compute(expression.toString());
+            expression=new StringBuilder("");
+            exp_format();
+            System.out.printf("\n\t%%l%d = %s", registerNum, expValue);
+            cond_exp.append("%l"+registerNum);
+            registerNum++;
             RelExp_();
         }else {
             currentToken--;
@@ -359,6 +443,7 @@ public class Parser {
     }
 
     public void AddExp()throws Exception {
+        count_Not=0;
         MulExp();
         AddExp_();
     }
@@ -368,10 +453,8 @@ public class Parser {
             expression.append(token.word);
             MulExp();
             AddExp_();
-        }else if(token.word.equals(";")||token.word.equals(")")||token.word.equals(",")){
+        }else {
             currentToken--;
-        }else{
-            throw new Exception("Wrong in AddExp_()");
         }
     }
     public void MulExp()throws Exception{
@@ -386,16 +469,18 @@ public class Parser {
             expression.append(token.word);
             UnaryExp();
             MulExp_();
-        }else if(token.word.equals(";")||token.word.equals("+")||token.word.equals("-")||token.word.equals(")")||token.word.equals(",")){
-            currentToken--;
         }else{
-            throw new Exception("Wrong in MulExp_()");
+            currentToken--;
         }
     }
     public void UnaryExp()throws Exception{
         Token token=getNextToken();
         if(token.id.equals("UnaryOp")){
-            expression.append(token.word);
+            if(token.word.equals("!")){
+                count_Not++;
+            }else{
+                expression.append(token.word);
+            }
             UnaryExp();
         } else if(token.id.equals("Num")){
             expression.append(token.word);
@@ -442,7 +527,7 @@ public class Parser {
         expression=new StringBuilder("");
         exp_format();
         System.out.printf("\n\tcall void @putch(i32 %s)",expValue);
-        currentToken+=2;
+        currentToken++;
     }
     public void putint()throws Exception{
         currentToken++;
@@ -451,7 +536,7 @@ public class Parser {
         expression=new StringBuilder("");
         exp_format();
         System.out.printf("\n\tcall void @putint(i32 %s)",expValue);
-        currentToken+=2;
+        currentToken++;
     }
     public void getint(int reg){
         System.out.printf("\n\t%%l%d = call i32 @getint()",registerNum);

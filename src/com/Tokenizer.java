@@ -296,17 +296,17 @@ public class Tokenizer {
             }
         } else if (str.charAt(0)=='!') {
             if(str.length()>1&&str.charAt(1)=='='){
-                token_list.add(new Token("nEq","!="));
+                token_list.add(new Token("Ne","!="));
                 if(str.length()>2){
                     goNext(str.substring(2));
                 }
                 return;
             } else {
-                token_list.add(new Token("Not","!"));
+                token_list.add(new Token("UnaryOp","!"));
             }
         } else if (str.charAt(0)=='<') {
             if(str.length()>1&&str.charAt(1)=='='){
-                token_list.add(new Token("Lte","<="));
+                token_list.add(new Token("Le","<="));
                 if(str.length()>2){
                     goNext(str.substring(2));
                 }
@@ -316,7 +316,7 @@ public class Tokenizer {
             }
         } else if (str.charAt(0)=='>') {
             if(str.length()>1&&str.charAt(1)=='='){
-                token_list.add(new Token("Gte",">="));
+                token_list.add(new Token("Ge",">="));
                 if(str.length()>2){
                     goNext(str.substring(2));
                 }

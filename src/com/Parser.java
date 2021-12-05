@@ -249,7 +249,7 @@ public class Parser {
             if(!getNextToken().word.equals("(")){
                 throw new Exception("Missing LPar of if Cond");
             }
-            System.out.printf("\n\n%d_Label_if:",label_if);
+            System.out.printf("\n\nLabelif%d:",label_if);
             label_if++;
             Cond();
             if(!getNextToken().word.equals(")")){

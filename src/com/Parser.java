@@ -429,7 +429,7 @@ public class Parser {
             expValue=calculator.compute(expression.toString());
             expression=new StringBuilder("");
             exp_format();
-            System.out.printf("\n\t%%l%d = %s", registerNum, expValue);
+            System.out.printf("\n\t%%l%d = add i32 %s, 0", registerNum, expValue);
             cond_exp.append("%l"+registerNum);
             registerNum++;
             RelExp_();

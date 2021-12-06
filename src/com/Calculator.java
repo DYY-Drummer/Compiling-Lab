@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Calculator {
-    int registerNum=Parser.registerNum_temp;
+    int registerNum;
     public String compute(String calStr){
         //System.out.println("------"+calStr);
         calStr=removeSerialSign(calStr);
         //System.out.println("------"+calStr);
+        registerNum=Parser.registerNum_temp;
         try {
+
             String result=calBase(calStr);
             Parser.registerNum_temp=registerNum;
             return result;

@@ -13,9 +13,10 @@ import java.util.List;
  */
 
 public class CondCalculator {
-    int registerNum=Parser.registerNum_temp;
+    int registerNum;
     public String compute(String calStr){
         //System.out.println("\n------"+calStr);
+        registerNum=Parser.registerNum_temp;
         try {
             String result=calBase(calStr);
             Parser.registerNum_temp=registerNum;

@@ -275,8 +275,9 @@ public class Parser {
                     Stmt();
                 }
             }else {
-//                System.out.printf("\n\nLabel_if_%d:",label_if);
-//                label_if++;
+                System.out.printf("\n\nLabel_if_%d:",label_if);
+                label_if++;
+                System.out.printf("\n\tbr label %%Label_cond_%d",stack_label_cond.getLast());
                 System.out.printf("\n\nLabel_cond_%d:",stack_label_cond.getLast());
                 stack_label_cond.removeLast();
                 currentToken--;

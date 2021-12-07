@@ -492,7 +492,7 @@ public class Parser {
                 if((!var.assigned)){
                     throw new Exception("variable in UnaryExp hasn't been assigned");
                 }
-                expression.append("v"+register_map.get(var.name).reg);
+                expression.append("v"+varMap.get(var.name).reg);
             }
         } else if(token.word.equals("(")){
             expression.append(token.word);

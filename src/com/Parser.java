@@ -7,8 +7,9 @@ import java.util.Map;
 
 public class Parser {
     ArrayList<Token> token_list=Tokenizer.token_list;
-    ArrayList<Variable> variable_list=new ArrayList<>();
-    Map<String,Integer> register_map=new HashMap<>();
+    //ArrayList<Variable> variable_list=new ArrayList<>();
+    Map<String,Variable> register_map;
+    LinkedList<Map<String,Variable>> stack_block = new LinkedList<>();
     Calculator calculator=new Calculator();
     CondCalculator condCalculator=new CondCalculator();
     StringBuilder expression=new StringBuilder("");
@@ -32,14 +33,6 @@ public class Parser {
             throw new Exception("Token_list doesn't enough!");
         }
         return token_list.get(currentToken);
-    }
-    public boolean var_isExist(String name){
-        for(Variable i:variable_list){
-            if(i.name.equals(name)){
-                return true;
-            }
-        }
-        return false;
     }
     public void CompUnit() throws Exception{
         if(token_list.size()==0)
@@ -97,12 +90,18 @@ public class Parser {
         if(!getNextToken().word.equals("{")){
             throw new Exception("Missing LBrace in Block");
         }
+        register_map=new HashMap<>();
+        stack_block.addLast(register_map);
         while(!getNextToken().word.equals("}")){
             /*for(int i=currentToken;i<currentToken+6;i++){
             System.out.println(token_list.get(i).word);
         }*/
             currentToken--;
             BlockItem();
+        }
+        stack_block.removeLast();
+        if(!stack_block.isEmpty()){
+            register_map=stack_block.getLast();
         }
     }
     public void BlockItem()throws Exception{
@@ -153,16 +152,15 @@ public class Parser {
         if(!getNextToken().word.equals("=")){
             throw new Exception("Missing '=' in ConstDef");
         }
-        Variable var=new Variable(varName,true);
         ConstInitVal();
-        register_map.put(varName,registerNum);
+        Variable var=new Variable(varName,true,registerNum);
         System.out.printf("\n\t%%l%d = alloca i32",registerNum);
         exp_format();
         System.out.printf("\n\tstore i32 %s, i32* %%l%d",expValue,registerNum);
         registerNum++;
-
         var.assigned=true;
-        variable_list.add(var);
+        register_map.put(varName,var);
+        //variable_list.add(var);
 
     }
     public void ConstInitVal()throws Exception{
@@ -193,15 +191,14 @@ public class Parser {
         if(!token.id.equals("Ident")){
             throw new Exception("Missing Ident in VarDef");
         }
-        if(var_isExist(token.word)){
-            throw new Exception("local variable name already exist");
+        if(register_map.containsKey(token.word)){
+            throw new Exception("Duplicate name in same Block");
         }
         String name=token.word;
         int reg=registerNum;
         registerNum++;
         System.out.printf("\n\t%%l%d = alloca i32",reg);
-        register_map.put(name,reg);
-        Variable var=new Variable(name,false);
+        Variable var=new Variable(name,false,reg);
         if(getNextToken().word.equals("=")){
             token=getNextToken();
             if(token.id.equals("Func")){
@@ -222,7 +219,8 @@ public class Parser {
         }else{
             currentToken--;
         }
-        variable_list.add(var);
+        register_map.put(name,var);
+        //variable_list.add(var);
     }
     public void InitVal()throws Exception{
         Exp();
@@ -284,21 +282,16 @@ public class Parser {
             }
 
         } else if(token_list.get(currentToken+1).word.equals("=")){
-            if(!register_map.containsKey(token.word)){
+            String name=token.word;
+            Map<String,Variable> varMap=isDeclared(name);
+            if(varMap==null){
                 throw new Exception("variable in Stmt hasn't been declared");
             }
-            String name=token.word;
-            Variable var = new Variable("temp",false);
-            for(Variable i:variable_list){
-                if(i.name.equals(name)){
-                    var=i;
-                    break;
-                }
-            }
+            Variable var=varMap.get(name);
             if(var.isConst){
                 throw new Exception("Can't change the value of Const variable");
             }
-            int reg=register_map.get(token.word);
+            int reg=var.reg;
             currentToken++;
             token=getNextToken();
             if(token.id.equals("Func")){
@@ -488,19 +481,19 @@ public class Parser {
         } else if(token.id.equals("Num")){
             expression.append(token.word);
         } else if(token.id.equals("Ident")){
-            for(Variable i:variable_list){
-                if(token.word.equals(i.name)){
-                    if(constInit&&!i.isConst){
-                        throw new Exception("Const val can't be init by val");
-                    }
-                    if((!i.assigned)){
-                        throw new Exception("variable in UnaryExp hasn't been assigned");
-                    }
-                    expression.append("v"+register_map.get(i.name));
-                    return;
+            Map<String,Variable> varMap=isDeclared(token.word);
+            if(varMap==null){
+                throw new Exception("variable in UnaryExp hasn't been declared");
+            } else{
+                Variable var=varMap.get(token.word);
+                if(constInit&&!var.isConst){
+                    throw new Exception("Const val can't be init by val");
                 }
+                if((!var.assigned)){
+                    throw new Exception("variable in UnaryExp hasn't been assigned");
+                }
+                expression.append("v"+register_map.get(var.name).reg);
             }
-            throw new Exception("variable in UnaryExp hasn't been declared");
         } else if(token.word.equals("(")){
             expression.append(token.word);
             Exp();
@@ -522,6 +515,14 @@ public class Parser {
         }else if(expValue.startsWith("t")){
             expValue=expValue.replace("t","%t");
         }
+    }
+    public Map<String,Variable> isDeclared(String name){
+        for(int i=stack_block.size()-1;i>=0;i--){
+            if(stack_block.get(i).containsKey(name)){
+                return stack_block.get(i);
+            }
+        }
+        return null;
     }
     public void putch()throws Exception{
         currentToken++;

@@ -21,7 +21,7 @@ public class Parser {
     boolean constInit;
     int label_cond;
     LinkedList<Integer> stack_label_cond=new LinkedList<>();
-    int label_if;
+    LinkedList<Integer> stack_label_if = new LinkedList<>();
     int label_or;
     int label_and;
     int label_stmt;
@@ -44,7 +44,6 @@ public class Parser {
         registerNum=1;
         registerNum_temp=1;
         label_cond=1;
-        label_if=1;
         label_or=1;
         label_and=1;
         label_stmt=1;
@@ -241,15 +240,17 @@ public class Parser {
 
         } else if(token.word.equals("if")){
             if(!token_list.get(currentToken-1).word.equals("else")){
+                stack_label_if.addLast(1);
                 stack_label_cond.addLast(label_cond);
                 label_cond++;
-                System.out.printf("\n\tbr label %%Label_if_%d",label_if);
+                System.out.printf("\n\tbr label %%Label_if_%d_%d",stack_label_if.getLast(),stack_label_cond.getLast());
             }
             if(!getNextToken().word.equals("(")){
                 throw new Exception("Missing LPar of if Cond");
             }
-            System.out.printf("\n\nLabel_if_%d:",label_if);
-            label_if++;
+            System.out.printf("\n\nLabel_if_%d_%d:",stack_label_if.getLast(),stack_label_cond.getLast());
+            int temp=stack_label_if.removeLast();
+            stack_label_if.addLast(temp+1);
             Cond();
             if(!getNextToken().word.equals(")")){
                 throw new Exception("Missing RPar of if Cond");
@@ -261,23 +262,27 @@ public class Parser {
             if(getNextToken().word.equals("else")){
                 if(!getNextToken().word.equals("if"))
                 {
-                    System.out.printf("\n\nLabel_if_%d:",label_if);
-                    label_if++;
+                    System.out.printf("\n\nLabel_if_%d_%d:",stack_label_if.getLast(),stack_label_cond.getLast());
+                    int label=stack_label_if.removeLast();
+                    stack_label_if.addLast(label+1);
                     currentToken--;
                     Stmt();
                     System.out.printf("\n\tbr label %%Label_cond_%d",stack_label_cond.getLast());
                     System.out.printf("\n\nLabel_cond_%d:",stack_label_cond.getLast());
                     stack_label_cond.removeLast();
+                    stack_label_if.removeLast();
                 }else{
                     currentToken--;
                     Stmt();
                 }
             }else {
-                System.out.printf("\n\nLabel_if_%d:",label_if);
-                label_if++;
+                System.out.printf("\n\nLabel_if_%d_%d:",stack_label_if.getLast(),stack_label_cond.getLast());
+                int label=stack_label_if.removeLast();
+                stack_label_if.addLast(label+1);
                 System.out.printf("\n\tbr label %%Label_cond_%d",stack_label_cond.getLast());
                 System.out.printf("\n\nLabel_cond_%d:",stack_label_cond.getLast());
                 stack_label_cond.removeLast();
+                stack_label_if.removeLast();
                 currentToken--;
             }
 
@@ -342,7 +347,7 @@ public class Parser {
         System.out.printf("\n\nLabel_or_%d:",label_or);
         label_or++;
         LOrExp_();
-        System.out.printf("\n\tbr label %%Label_if_%d",label_if);
+        System.out.printf("\n\tbr label %%Label_if_%d_%d",stack_label_if.getLast(),stack_label_cond.getLast());
     }
     public void LOrExp_()throws Exception{
         if(getNextToken().word.equals("||")){

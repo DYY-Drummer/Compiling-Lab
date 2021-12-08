@@ -10,8 +10,10 @@ public class Parser {
     //ArrayList<Variable> variable_list=new ArrayList<>();
     Map<String,Variable> register_map;
     LinkedList<Map<String,Variable>> stack_block = new LinkedList<>();
+    Map<String,Variable> global_map = new HashMap<>();
     Calculator calculator=new Calculator();
     CondCalculator condCalculator=new CondCalculator();
+    ConstCalculator constCalculator=new ConstCalculator();
     StringBuilder expression=new StringBuilder("");
     StringBuilder cond_exp=new StringBuilder("");
     int currentToken;
@@ -19,6 +21,7 @@ public class Parser {
     int registerNum;
     static int registerNum_temp;
     boolean constInit;
+    boolean globalInit;
     int label_cond;
     LinkedList<Integer> stack_label_cond=new LinkedList<>();
     LinkedList<Integer> stack_label_if = new LinkedList<>();
@@ -47,11 +50,14 @@ public class Parser {
         label_or=1;
         label_and=1;
         label_stmt=1;
-
+        register_map=global_map;
+        while (!token_list.get(currentToken+2).word.equals("main")){
+            Decl();
+        }
         FuncDef();
     }
     public void FuncDef() throws Exception{
-        System.out.print("define dso_local");
+        System.out.print("\ndefine dso_local");
         FuncType();
         Ident();
         if(getNextToken().word.equals("(")){
@@ -101,6 +107,8 @@ public class Parser {
         stack_block.removeLast();
         if(!stack_block.isEmpty()){
             register_map=stack_block.getLast();
+        }else{
+            register_map=global_map;
         }
     }
     public void BlockItem()throws Exception{
@@ -118,6 +126,9 @@ public class Parser {
 
     public void Decl()throws Exception{
         Token token=getNextToken();
+        if(register_map==global_map){
+            globalInit=true;
+        }
         if(token.word.equals("const")){
             ConstDecl();
         }else if (token.word.equals("int")){
@@ -125,6 +136,7 @@ public class Parser {
         }else{
             throw new Exception("Wrong in Decl");
         }
+        globalInit=false;
     }
     public void ConstDecl()throws Exception{
         Token token=getNextToken();
@@ -148,17 +160,25 @@ public class Parser {
         }else{
             throw new Exception("Missing Ident in ConstDef");
         }
+        if(register_map.containsKey(token.word)){
+            throw new Exception("Duplicate ConstDef name in same Block");
+        }
         if(!getNextToken().word.equals("=")){
             throw new Exception("Missing '=' in ConstDef");
         }
         ConstInitVal();
         Variable var=new Variable(varName,true,registerNum);
-        System.out.printf("\n\t%%l%d = alloca i32",registerNum);
-        exp_format();
-        System.out.printf("\n\tstore i32 %s, i32* %%l%d",expValue,registerNum);
-        registerNum++;
         var.assigned=true;
-        register_map.put(varName,var);
+        if(register_map!=global_map) {
+            System.out.printf("\n\t%%l%d = alloca i32", registerNum);
+            exp_format();
+            System.out.printf("\n\tstore i32 %s, i32* %%l%d", expValue, registerNum);
+            registerNum++;
+        }else{
+            System.out.printf("\n@%s = dso_local global i32 %s",var.name,expValue);
+            var.constValue=Integer.parseInt(expValue);
+        }
+        register_map.put(varName, var);
         //variable_list.add(var);
 
     }
@@ -169,7 +189,11 @@ public class Parser {
     }
     public void ConstExp()throws Exception{
         AddExp();
-        expValue=calculator.compute(expression.toString());
+        if(register_map!=global_map) {
+            expValue = calculator.compute(expression.toString());
+        }else{
+            expValue=constCalculator.compute(expression.toString());
+        }
         expression=new StringBuilder("");
     }
     public void VarDecl()throws Exception{
@@ -191,39 +215,56 @@ public class Parser {
             throw new Exception("Missing Ident in VarDef");
         }
         if(register_map.containsKey(token.word)){
-            throw new Exception("Duplicate name in same Block");
+            throw new Exception("Duplicate VarDef name in same Block");
         }
         String name=token.word;
-        int reg=registerNum;
-        registerNum++;
-        System.out.printf("\n\t%%l%d = alloca i32",reg);
-        Variable var=new Variable(name,false,reg);
-        if(getNextToken().word.equals("=")){
-            token=getNextToken();
-            if(token.id.equals("Func")){
-                if(token.word.equals("getint")){
-                    getint(reg);
-                }else if(token.word.equals("getch")){
-                    getch(reg);
-                }else{
-                    throw new Exception("wrong Func in VarDef");
+        int reg = registerNum;
+        Variable var = new Variable(name, false, reg);;
+        if(register_map!=global_map)
+        {
+            registerNum++;
+            System.out.printf("\n\t%%l%d = alloca i32", reg);
+            if (getNextToken().word.equals("=")) {
+                token = getNextToken();
+                if (token.id.equals("Func")) {
+                    if (token.word.equals("getint")) {
+                        getint(register_map,reg+"");
+                    } else if (token.word.equals("getch")) {
+                        getch(register_map, reg+"");
+                    } else {
+                        throw new Exception("wrong Func in VarDef");
+                    }
+                } else {
+                    currentToken--;
+                    InitVal();
+                    exp_format();
+                    System.out.printf("\n\tstore i32 %s, i32* %%l%d", expValue, reg);
                 }
-            }else {
+                var.assigned = true;
+            } else {
                 currentToken--;
-                InitVal();
-                exp_format();
-                System.out.printf("\n\tstore i32 %s, i32* %%l%d", expValue, reg);
             }
-            var.assigned = true;
         }else{
-            currentToken--;
+            if(getNextToken().word.equals("=")){
+                InitVal();
+                System.out.printf("\n@%s = dso_local global i32 %s",var.name,expValue);
+            }else{
+                System.out.printf("\n@%s = dso_local global i32 0",var.name);
+                currentToken--;
+            }
+            var.assigned=true;
+
         }
         register_map.put(name,var);
         //variable_list.add(var);
     }
     public void InitVal()throws Exception{
         Exp();
-        expValue=calculator.compute(expression.toString());
+        if(register_map!=global_map) {
+            expValue = calculator.compute(expression.toString());
+        }else{
+            expValue=constCalculator.compute(expression.toString());
+        }
         expression=new StringBuilder("");
     }
     public void Stmt() throws Exception{
@@ -296,16 +337,21 @@ public class Parser {
             if(var.isConst){
                 throw new Exception("Can't change the value of Const variable");
             }
-            int reg=var.reg;
+            String reg;
+            if(varMap==global_map){
+                reg="@"+var.name;
+            }else {
+                reg="%l"+var.reg;
+            }
             currentToken++;
             token=getNextToken();
             if(token.id.equals("Func")){
                 if(token.word.equals("getint")){
-                    getint(reg);
+                    getint(varMap,reg);
                 }else if(token.word.equals("getch")){
-                    getch(reg);
+                    getch(varMap,reg);
                 }else{
-                    throw new Exception("wrong Func in Stmt");
+                    throw new Exception("Undeclared Func in Stmt");
                 }
             }else{
                 currentToken--;
@@ -313,7 +359,7 @@ public class Parser {
                 expValue=calculator.compute(expression.toString());
                 expression=new StringBuilder("");
                 exp_format();
-                System.out.printf("\n\tstore i32 %s, i32* %%l%d",expValue,reg);
+                System.out.printf("\n\tstore i32 %s, i32* %s",expValue,reg);
             }
             var.assigned=true;
             if(!getNextToken().word.equals(";")){
@@ -489,10 +535,22 @@ public class Parser {
             Map<String,Variable> varMap=isDeclared(token.word);
             if(varMap==null){
                 throw new Exception("variable in UnaryExp hasn't been declared");
+            } else if(varMap==global_map){
+                Variable var=varMap.get(token.word);
+                if(globalInit){
+                    if(!var.isConst) {
+                        throw new Exception("Global val can't be init by var");
+                    }
+                    expression.append(var.constValue);
+                } else{
+                    System.out.printf("\n\t%%l%d = load i32, i32* @%s",registerNum,var.name);
+                    expression.append("v"+registerNum);
+                    registerNum++;
+                }
             } else{
                 Variable var=varMap.get(token.word);
                 if(constInit&&!var.isConst){
-                    throw new Exception("Const val can't be init by val");
+                    throw new Exception("Const val can't be init by var");
                 }
                 if((!var.assigned)){
                     throw new Exception("variable in UnaryExp hasn't been assigned");
@@ -527,6 +585,9 @@ public class Parser {
                 return stack_block.get(i);
             }
         }
+        if(global_map.containsKey(name)){
+            return global_map;
+        }
         return null;
     }
     public void putch()throws Exception{
@@ -547,15 +608,19 @@ public class Parser {
         System.out.printf("\n\tcall void @putint(i32 %s)",expValue);
         currentToken++;
     }
-    public void getint(int reg){
+    public void getint(Map<String,Variable> varMap,String reg){
         System.out.printf("\n\t%%l%d = call i32 @getint()",registerNum);
-        System.out.printf("\n\tstore i32 %%l%d, i32* %%l%d",registerNum,reg);
+        if(varMap==global_map){
+            System.out.printf("\n\tstore i32 %%l%d, i32* @%s",registerNum,reg);
+        }else {
+            System.out.printf("\n\tstore i32 %%l%d, i32* %%l%s", registerNum, reg);
+        }
         registerNum++;
         currentToken+=2;
     }
-    public void getch(int reg){
+    public void getch(Map<String, Variable> varMap, String reg){
         System.out.printf("\n\t%%l%d = call i32 @getch()",registerNum);
-        System.out.printf("\n\tstore i32 %%l%d, i32* %%l%d",registerNum,reg);
+        System.out.printf("\n\tstore i32 %%l%d, i32* %s",registerNum,reg);
         registerNum++;
         currentToken+=2;
     }

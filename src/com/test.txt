@@ -1,9 +1,8 @@
-const int a = 5+10-16/(5*9);
-int b=5+a;
-int main() {
-    int c=a;
-    b=c+a;
-    int b = getint();
-    putint(a + b);
-    return 0;
-}
+const int a = 6;
+  int b = a + 1;
+  int main() {
+      int c = b;
+      int b = 8;
+      putint(b + c);
+      return 0;
+  }

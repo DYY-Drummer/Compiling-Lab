@@ -1,9 +1,6 @@
 package com;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 public class Parser {
     ArrayList<Token> token_list=Tokenizer.token_list;
@@ -25,9 +22,12 @@ public class Parser {
     int label_cond;
     LinkedList<Integer> stack_label_cond=new LinkedList<>();
     LinkedList<Integer> stack_label_if = new LinkedList<>();
+    Stack<Integer> stack_label_while=new Stack<>();
     int label_or;
     int label_and;
     int label_stmt;
+    int label_while;
+    boolean isWhile;
     String and_result;
     int count_Not;
     public Token getNextToken()throws Exception{
@@ -50,7 +50,9 @@ public class Parser {
         label_or=1;
         label_and=1;
         label_stmt=1;
+        label_while=1;
         register_map=global_map;
+        isWhile=false;
         while (!token_list.get(currentToken+2).word.equals("main")){
             Decl();
         }
@@ -280,53 +282,9 @@ public class Parser {
             }
 
         } else if(token.word.equals("if")){
-            if(!token_list.get(currentToken-1).word.equals("else")){
-                stack_label_if.addLast(1);
-                stack_label_cond.addLast(label_cond);
-                label_cond++;
-                System.out.printf("\n\tbr label %%Label_if_%d_%d",stack_label_if.getLast(),stack_label_cond.getLast());
-            }
-            if(!getNextToken().word.equals("(")){
-                throw new Exception("Missing LPar of if Cond");
-            }
-            System.out.printf("\n\nLabel_if_%d_%d:",stack_label_if.getLast(),stack_label_cond.getLast());
-            int temp=stack_label_if.removeLast();
-            stack_label_if.addLast(temp+1);
-            Cond();
-            if(!getNextToken().word.equals(")")){
-                throw new Exception("Missing RPar of if Cond");
-            }
-            System.out.printf("\n\nLabel_stmt_%d:",label_stmt);
-            label_stmt++;
-            Stmt();
-            System.out.printf("\n\tbr label %%Label_cond_%d",stack_label_cond.getLast());
-            if(getNextToken().word.equals("else")){
-                if(!getNextToken().word.equals("if"))
-                {
-                    System.out.printf("\n\nLabel_if_%d_%d:",stack_label_if.getLast(),stack_label_cond.getLast());
-                    int label=stack_label_if.removeLast();
-                    stack_label_if.addLast(label+1);
-                    currentToken--;
-                    Stmt();
-                    System.out.printf("\n\tbr label %%Label_cond_%d",stack_label_cond.getLast());
-                    System.out.printf("\n\nLabel_cond_%d:",stack_label_cond.getLast());
-                    stack_label_cond.removeLast();
-                    stack_label_if.removeLast();
-                }else{
-                    currentToken--;
-                    Stmt();
-                }
-            }else {
-                System.out.printf("\n\nLabel_if_%d_%d:",stack_label_if.getLast(),stack_label_cond.getLast());
-                int label=stack_label_if.removeLast();
-                stack_label_if.addLast(label+1);
-                System.out.printf("\n\tbr label %%Label_cond_%d",stack_label_cond.getLast());
-                System.out.printf("\n\nLabel_cond_%d:",stack_label_cond.getLast());
-                stack_label_cond.removeLast();
-                stack_label_if.removeLast();
-                currentToken--;
-            }
-
+            If();
+        } else if(token.word.equals("while")){
+            While();
         } else if(token_list.get(currentToken+1).word.equals("=")){
             String name=token.word;
             Map<String,Variable> varMap=isDeclared(name);
@@ -385,6 +343,77 @@ public class Parser {
         }
 
     }
+    public void If() throws Exception{
+        if(!token_list.get(currentToken-1).word.equals("else")){
+            stack_label_if.addLast(1);
+            stack_label_cond.addLast(label_cond);
+            label_cond++;
+            System.out.printf("\n\tbr label %%Label_if_%d_%d",stack_label_if.getLast(),stack_label_cond.getLast());
+        }
+        if(!getNextToken().word.equals("(")){
+            throw new Exception("Missing LPar of if Cond");
+        }
+        System.out.printf("\n\nLabel_if_%d_%d:",stack_label_if.getLast(),stack_label_cond.getLast());
+        int temp=stack_label_if.removeLast();
+        stack_label_if.addLast(temp+1);
+        Cond();
+        if(!getNextToken().word.equals(")")){
+            throw new Exception("Missing RPar of if Cond");
+        }
+        System.out.printf("\n\nLabel_stmt_%d:",label_stmt);
+        label_stmt++;
+        Stmt();
+        System.out.printf("\n\tbr label %%Label_cond_%d",stack_label_cond.getLast());
+        if(getNextToken().word.equals("else")){
+            if(!getNextToken().word.equals("if"))
+            {
+                System.out.printf("\n\nLabel_if_%d_%d:",stack_label_if.getLast(),stack_label_cond.getLast());
+                int label=stack_label_if.removeLast();
+                stack_label_if.addLast(label+1);
+                currentToken--;
+                Stmt();
+                System.out.printf("\n\tbr label %%Label_cond_%d",stack_label_cond.getLast());
+                System.out.printf("\n\nLabel_cond_%d:",stack_label_cond.getLast());
+                stack_label_cond.removeLast();
+                stack_label_if.removeLast();
+            }else{
+                currentToken--;
+                Stmt();
+            }
+        }else {
+            System.out.printf("\n\nLabel_if_%d_%d:",stack_label_if.getLast(),stack_label_cond.getLast());
+            int label=stack_label_if.removeLast();
+            stack_label_if.addLast(label+1);
+            System.out.printf("\n\tbr label %%Label_cond_%d",stack_label_cond.getLast());
+            System.out.printf("\n\nLabel_cond_%d:",stack_label_cond.getLast());
+            stack_label_cond.removeLast();
+            stack_label_if.removeLast();
+            currentToken--;
+        }
+
+    }
+    public void While() throws Exception{
+        isWhile=true;
+        stack_label_while.push(label_while);
+        label_while++;
+        System.out.printf("\n\tbr label %%Label_while_%d",stack_label_while.peek());
+        if(!getNextToken().word.equals("(")){
+            throw new Exception("Missing LPar of while Cond");
+        }
+        System.out.printf("\n\nLabel_while_%d:",stack_label_while.peek());
+
+        Cond();
+
+        if(!getNextToken().word.equals(")")){
+            throw new Exception("Missing RPar of while Cond");
+        }
+        System.out.printf("\n\nLabel_stmt_%d:",label_stmt);
+        label_stmt++;
+        Stmt();
+        System.out.printf("\n\tbr label %%Label_while_%d",stack_label_while.peek());
+        System.out.printf("\n\nLabel_whileEnd_%d:",stack_label_while.pop());
+        isWhile=false;
+    }
     public void Cond()throws Exception{
         LOrExp();
     }
@@ -393,7 +422,11 @@ public class Parser {
         System.out.printf("\n\nLabel_or_%d:",label_or);
         label_or++;
         LOrExp_();
-        System.out.printf("\n\tbr label %%Label_if_%d_%d",stack_label_if.getLast(),stack_label_cond.getLast());
+        if(isWhile){
+            System.out.printf("\n\tbr label %%Label_whileEnd_%d",stack_label_while.peek());
+        }else {
+            System.out.printf("\n\tbr label %%Label_if_%d_%d", stack_label_if.getLast(), stack_label_cond.getLast());
+        }
     }
     public void LOrExp_()throws Exception{
         if(getNextToken().word.equals("||")){
@@ -543,9 +576,9 @@ public class Parser {
                     }
                     expression.append(var.constValue);
                 } else{
-                    System.out.printf("\n\t%%l%d = load i32, i32* @%s",registerNum,var.name);
-                    expression.append("v"+registerNum);
-                    registerNum++;
+                    System.out.printf("\n\t%%t%d = load i32, i32* @%s",registerNum_temp,var.name);
+                    expression.append("t"+registerNum_temp);
+                    registerNum_temp++;
                 }
             } else{
                 Variable var=varMap.get(token.word);
@@ -610,11 +643,7 @@ public class Parser {
     }
     public void getint(Map<String,Variable> varMap,String reg){
         System.out.printf("\n\t%%l%d = call i32 @getint()",registerNum);
-        if(varMap==global_map){
-            System.out.printf("\n\tstore i32 %%l%d, i32* @%s",registerNum,reg);
-        }else {
-            System.out.printf("\n\tstore i32 %%l%d, i32* %%l%s", registerNum, reg);
-        }
+        System.out.printf("\n\tstore i32 %%l%d, i32* %s",registerNum,reg);
         registerNum++;
         currentToken+=2;
     }

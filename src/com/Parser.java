@@ -230,9 +230,9 @@ public class Parser {
                 token = getNextToken();
                 if (token.id.equals("Func")) {
                     if (token.word.equals("getint")) {
-                        getint(register_map,reg+"");
+                        getint("%l"+reg);
                     } else if (token.word.equals("getch")) {
-                        getch(register_map, reg+"");
+                        getch( "%l"+reg);
                     } else {
                         throw new Exception("wrong Func in VarDef");
                     }
@@ -305,9 +305,9 @@ public class Parser {
             token=getNextToken();
             if(token.id.equals("Func")){
                 if(token.word.equals("getint")){
-                    getint(varMap,reg);
+                    getint(reg);
                 }else if(token.word.equals("getch")){
-                    getch(varMap,reg);
+                    getch(reg);
                 }else{
                     throw new Exception("Undeclared Func in Stmt");
                 }
@@ -641,13 +641,13 @@ public class Parser {
         System.out.printf("\n\tcall void @putint(i32 %s)",expValue);
         currentToken++;
     }
-    public void getint(Map<String,Variable> varMap,String reg){
+    public void getint(String reg){
         System.out.printf("\n\t%%l%d = call i32 @getint()",registerNum);
         System.out.printf("\n\tstore i32 %%l%d, i32* %s",registerNum,reg);
         registerNum++;
         currentToken+=2;
     }
-    public void getch(Map<String, Variable> varMap, String reg){
+    public void getch(String reg){
         System.out.printf("\n\t%%l%d = call i32 @getch()",registerNum);
         System.out.printf("\n\tstore i32 %%l%d, i32* %s",registerNum,reg);
         registerNum++;

@@ -28,6 +28,7 @@ public class Parser {
     int label_stmt;
     int label_while;
     boolean isWhile;
+    boolean isWhile_old;
     String and_result;
     int count_Not;
     public Token getNextToken()throws Exception{
@@ -344,7 +345,9 @@ public class Parser {
 
     }
     public void If() throws Exception{
+        isWhile_old=isWhile;
         if(!token_list.get(currentToken-1).word.equals("else")){
+            isWhile=false;
             stack_label_if.addLast(1);
             stack_label_cond.addLast(label_cond);
             label_cond++;
@@ -390,7 +393,7 @@ public class Parser {
             stack_label_if.removeLast();
             currentToken--;
         }
-
+        isWhile=isWhile_old;
     }
     public void While() throws Exception{
         isWhile=true;

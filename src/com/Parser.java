@@ -336,8 +336,11 @@ public class Parser {
         } else if(token.word.equals("{")){
             currentToken--;
             Block();
+        } else if(token.word.equals(";")){
+
         } else{
             Exp();
+            expression=new StringBuilder("");
             if(!getNextToken().word.equals(";")){
                 throw new Exception("Missing ';' after Exp in Stmt");
             }

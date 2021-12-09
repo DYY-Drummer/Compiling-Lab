@@ -286,6 +286,10 @@ public class Parser {
             If();
         } else if(token.word.equals("while")){
             While();
+        } else if(token.word.equals("break")){
+            System.out.printf("\n\tbr label %%Label_whileEnd_%d",stack_label_while.peek());
+        } else if(token.word.equals("continue")){
+            System.out.printf("\n\tbr label %%Label_while_%d",stack_label_while.peek());
         } else if(token_list.get(currentToken+1).word.equals("=")){
             String name=token.word;
             Map<String,Variable> varMap=isDeclared(name);

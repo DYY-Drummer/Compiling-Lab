@@ -228,21 +228,9 @@ public class Parser {
             registerNum++;
             System.out.printf("\n\t%%l%d = alloca i32", reg);
             if (getNextToken().word.equals("=")) {
-                token = getNextToken();
-                if (token.id.equals("Func")) {
-                    if (token.word.equals("getint")) {
-                        getint("%l"+reg);
-                    } else if (token.word.equals("getch")) {
-                        getch( "%l"+reg);
-                    } else {
-                        throw new Exception("wrong Func in VarDef");
-                    }
-                } else {
-                    currentToken--;
-                    InitVal();
-                    exp_format();
-                    System.out.printf("\n\tstore i32 %s, i32* %%l%d", expValue, reg);
-                }
+                InitVal();
+                exp_format();
+                System.out.printf("\n\tstore i32 %s, i32* %%l%d", expValue, reg);
                 var.assigned = true;
             } else {
                 currentToken--;
@@ -307,23 +295,12 @@ public class Parser {
                 reg="%l"+var.reg;
             }
             currentToken++;
-            token=getNextToken();
-            if(token.id.equals("Func")){
-                if(token.word.equals("getint")){
-                    getint(reg);
-                }else if(token.word.equals("getch")){
-                    getch(reg);
-                }else{
-                    throw new Exception("Undeclared Func in Stmt");
-                }
-            }else{
-                currentToken--;
-                Exp();
-                expValue=calculator.compute(expression.toString());
-                expression=new StringBuilder("");
-                exp_format();
-                System.out.printf("\n\tstore i32 %s, i32* %s",expValue,reg);
-            }
+            Exp();
+            expValue=calculator.compute(expression.toString());
+            expression=new StringBuilder("");
+            exp_format();
+            System.out.printf("\n\tstore i32 %s, i32* %s",expValue,reg);
+
             var.assigned=true;
             if(!getNextToken().word.equals(";")){
                 throw new Exception("Missing ';' after Exp in Assign");
@@ -574,6 +551,16 @@ public class Parser {
             UnaryExp();
         } else if(token.id.equals("Num")){
             expression.append(token.word);
+        } else if(token.id.equals("Func")){
+            if(token.word.equals("getint")){
+                getint();
+                expression.append("t"+registerNum_temp);
+                registerNum_temp++;
+            }else if(token.word.equals("getch")){
+                getch();
+                expression.append("t"+registerNum_temp);
+                registerNum_temp++;
+            }
         } else if(token.id.equals("Ident")){
             Map<String,Variable> varMap=isDeclared(token.word);
             if(varMap==null){
@@ -651,16 +638,12 @@ public class Parser {
         System.out.printf("\n\tcall void @putint(i32 %s)",expValue);
         currentToken++;
     }
-    public void getint(String reg){
-        System.out.printf("\n\t%%l%d = call i32 @getint()",registerNum);
-        System.out.printf("\n\tstore i32 %%l%d, i32* %s",registerNum,reg);
-        registerNum++;
+    public void getint(){
+        System.out.printf("\n\t%%t%d = call i32 @getint()",registerNum_temp);
         currentToken+=2;
     }
-    public void getch(String reg){
-        System.out.printf("\n\t%%l%d = call i32 @getch()",registerNum);
-        System.out.printf("\n\tstore i32 %%l%d, i32* %s",registerNum,reg);
-        registerNum++;
+    public void getch(){
+        System.out.printf("\n\t%%t%d = call i32 @getch()",registerNum_temp);
         currentToken+=2;
     }
 }

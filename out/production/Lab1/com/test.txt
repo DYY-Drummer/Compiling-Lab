@@ -1,16 +1,51 @@
-int k;
-  const int n = 10;
+const int ascii_0 = 48;
 
   int main() {
-      int i = 0;
-      k = 1;
+      int sum = 0, c;
 
-      while (i <= n - 1) {
-          i = i + 1;
-          i + 1;
-          k + 1;
-          k = k + k;
+      while (1) {
+          c = getch() - ascii_0;
+          if (c < 0 || c > 9) {
+              continue;
+          } else {
+              break;
+          }
       }
-      putint(k);
+      sum = c;
+
+      while (1) {
+          c = getch() - ascii_0;
+          if (c >= 0 && c <= 9) {
+              sum = sum * 10 + c;
+          } else {
+              break;
+          }
+      }
+
+      putint(sum);
+      putch(10);
+
+      sum = 0;
+
+      while (1) {
+          c = getch() - ascii_0;
+          if (c < 0 || c > 9) {
+              continue;
+          } else {
+              break;
+          }
+      }
+      sum = c;
+
+      while (1) {
+          c = getch() - ascii_0;
+          if (c >= 0 && c <= 9) {
+              sum = sum * 10 + c;
+          } else {
+              break;
+          }
+      }
+
+      putint(sum);
       return 0;
   }

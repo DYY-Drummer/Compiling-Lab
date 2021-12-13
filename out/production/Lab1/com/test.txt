@@ -1,51 +1,15 @@
-const int ascii_0 = 48;
-
+const int t = 4;
+int x;
+int a[2][3]={{t,4}};
+const int b[2][3][t]={{{},{t,1},{1}},{{12,6}}};
   int main() {
-      int sum = 0, c;
-
-      while (1) {
-          c = getch() - ascii_0;
-          if (c < 0 || c > 9) {
-              continue;
-          } else {
-              break;
-          }
-      }
-      sum = c;
-
-      while (1) {
-          c = getch() - ascii_0;
-          if (c >= 0 && c <= 9) {
-              sum = sum * 10 + c;
-          } else {
-              break;
-          }
-      }
-
-      putint(sum);
-      putch(10);
-
-      sum = 0;
-
-      while (1) {
-          c = getch() - ascii_0;
-          if (c < 0 || c > 9) {
-              continue;
-          } else {
-              break;
-          }
-      }
-      sum = c;
-
-      while (1) {
-          c = getch() - ascii_0;
-          if (c >= 0 && c <= 9) {
-              sum = sum * 10 + c;
-          } else {
-              break;
-          }
-      }
-
-      putint(sum);
-      return 0;
+    const int c[4]={1,2,3};
+    const int d[6][3]={};
+    int e[2][3]={{},{d[2][1]}};
+    int f[3][3]={{1,2,3},{},{6}};
+    f[1][2]=e[0][2];
+    putint(a[1][2]);
+    return 0;
   }
+
+[[[4 x i32] zeroinitializer, [4 x i32] [i32 11, i32 1, i32 0, i32 0], [4 x i32] [i32 1, i32 0, i32 0, i32 0]], [[4 x i32] [i32 12, i32 6, i32 0, i32 0], [3 x [4 x i32]] zeroinitializer, [3 x [4 x i32]] zeroinitializer]]

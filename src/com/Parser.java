@@ -31,6 +31,9 @@ public class Parser {
     boolean isWhile_old;
     String and_result;
     int count_Not;
+    ArrayList<Integer> dim = new ArrayList<>();
+    ArrayList<Integer> dim_current =new ArrayList<>();
+    int array_level;
     public Token getNextToken()throws Exception{
         currentToken++;
         if(currentToken>token_list.size()-1){
@@ -166,28 +169,145 @@ public class Parser {
         if(register_map.containsKey(token.word)){
             throw new Exception("Duplicate ConstDef name in same Block");
         }
+
+        while(getNextToken().word.equals("[")){
+            ConstExp();
+            dim.add(Integer.parseInt(expValue));
+            if(!getNextToken().word.equals("]")){
+                throw new Exception("Missing RBra of Array in ConstDef");
+            }
+        }
+        currentToken--;
         if(!getNextToken().word.equals("=")){
             throw new Exception("Missing '=' in ConstDef");
         }
-        ConstInitVal();
-        Variable var=new Variable(varName,true,registerNum);
-        var.assigned=true;
-        if(register_map!=global_map) {
-            System.out.printf("\n\t%%l%d = alloca i32", registerNum);
-            exp_format();
-            System.out.printf("\n\tstore i32 %s, i32* %%l%d", expValue, registerNum);
-            registerNum++;
-        }else{
-            System.out.printf("\n@%s = dso_local global i32 %s",var.name,expValue);
-            var.constValue=Integer.parseInt(expValue);
+        int reg=0;
+        if(dim.size()>0){
+            for(int i=0;i<dim.size();i++){
+                dim_current.add(0);
+            }
+            array_level=-1;
+            if(register_map!=global_map){
+                reg=registerNum;
+                registerNum++;
+                array_memset(reg);
+                arrayInitVal(registerNum-1);
+            } else {
+                System.out.printf("\n@%s = dso_local global ",varName);
+                print_arrayDim(dim,0);
+                System.out.print(" ");
+            }
         }
-        register_map.put(varName, var);
-        //variable_list.add(var);
 
+
+        if(dim.size()==0||register_map==global_map){
+            ConstInitVal();
+            reg=registerNum;
+        }
+        Variable var=new Variable(varName,true,reg);
+
+
+        if(dim.size()==0){
+            if (register_map != global_map) {
+                System.out.printf("\n\t%%l%d = alloca i32", registerNum);
+                exp_format();
+                System.out.printf("\n\tstore i32 %s, i32* %%l%d", expValue, registerNum);
+                registerNum++;
+            } else {
+                System.out.printf("\n@%s = dso_local global i32 %s", varName, expValue);
+                var.constValue = Integer.parseInt(expValue);
+            }
+        }else{
+            var.dim=dim;
+            dim =new ArrayList<>();
+            dim_current=new ArrayList<>();
+        }
+        var.assigned=true;
+        register_map.put(varName, var);
+
+    }
+
+    public void array_memset(int reg) {
+        System.out.printf("\n\t%%l%d = alloca ", reg);
+        print_arrayDim(dim,0);
+        System.out.printf("\n\t%%l%d = getelementptr ",registerNum);
+        print_arrayDim(dim,0);
+        System.out.print(", ");
+        print_arrayDim(dim,0);
+        System.out.printf("* %%l%d",reg);
+        int size=1;
+        for(int i =0;i<=dim.size();i++){
+            if(i<dim.size()){
+                size*=dim.get(i);
+            }
+            System.out.print(", i32 0");
+        }
+        System.out.printf("\n\tcall void @memset(i32* %%l%d, i32 0, i32 %d)",registerNum,size*4);
+        registerNum++;
+    }
+
+    public void print_arrayDim(ArrayList<Integer> dim,int i){
+        if(i<dim.size()-1){
+            System.out.printf("[%d x ",dim.get(i));
+            print_arrayDim(dim,i+1);
+            System.out.print("]");
+
+        }else{
+            System.out.printf("[%d x i32]",dim.get(i));
+        }
     }
     public void ConstInitVal()throws Exception{
         constInit=true;
-        ConstExp();
+        if(getNextToken().word.equals("{")){
+            array_level++;
+            if(array_level>dim.size()-1){
+                throw new Exception("out of the max dim of Array");
+            }
+            if(!getNextToken().word.equals("}")){
+                if(array_level==dim.size()-1&&dim.size()>1){
+                    System.out.printf("[%s x i32] ",dim.get(dim.size()-1));
+                }
+                System.out.print("[");
+                currentToken--;
+                ConstInitVal();
+                dim_current.set(array_level,dim_current.get(array_level)+1);
+                while(getNextToken().word.equals(",")){
+                    System.out.print(", ");
+                    ConstInitVal();
+                    dim_current.set(array_level,dim_current.get(array_level)+1);
+                }
+                currentToken--;
+                while(dim_current.get(array_level)<dim.get(array_level)){
+                    if(array_level==dim.size()-1){
+                        System.out.print(", i32 0");
+                    }else{
+                        System.out.print(", ");
+                        print_arrayDim(dim,array_level+1);
+                        System.out.print(" zeroinitializer");
+                    }
+                    dim_current.set(array_level,dim_current.get(array_level)+1);
+                }
+                if(!getNextToken().word.equals("}")){
+                    System.out.println("Missing RBra of ArrayInit in ConstInitval ");
+                }
+                System.out.print("]");
+            }else{
+                if(array_level>0) {
+                    print_arrayDim(dim, array_level);
+                }
+                System.out.print(" zeroinitializer");
+                dim_current.set(array_level,dim.get(array_level));
+
+            }
+            dim_current.set(array_level,0);
+            array_level--;
+        }else {
+            currentToken--;
+            ConstExp();
+            if(dim.size()>0){
+                System.out.print("i32 "+expValue);
+            }
+        }
         constInit=false;
     }
     public void ConstExp()throws Exception{
@@ -208,6 +328,7 @@ public class Parser {
         if(!getNextToken().word.equals(";")){
             throw new Exception("Missing ';' in VarDecl");
         }
+
     }
     public void VarDef()throws Exception{
 //        for(int i=currentToken;i<currentToken+6;i++){
@@ -218,36 +339,118 @@ public class Parser {
             throw new Exception("Missing Ident in VarDef");
         }
         if(register_map.containsKey(token.word)){
-            throw new Exception("Duplicate VarDef name in same Block");
+            throw new Exception("Duplicate VarDef name in the same Block");
         }
         String name=token.word;
         int reg = registerNum;
         Variable var = new Variable(name, false, reg);;
-        if(register_map!=global_map)
-        {
+        while(getNextToken().word.equals("[")){
+            ConstExp();
+            dim.add(Integer.parseInt(expValue));
+            if(!getNextToken().word.equals("]")){
+                throw new Exception("Missing RBra of Array in VarDef");
+            }
+        }
+        var.dim=dim;
+        currentToken--;
+        array_level=-1;
+        for(int i=0;i<dim.size();i++){
+            dim_current.add(0);
+        }
+        if(register_map!=global_map){
             registerNum++;
-            System.out.printf("\n\t%%l%d = alloca i32", reg);
-            if (getNextToken().word.equals("=")) {
-                InitVal();
-                exp_format();
-                System.out.printf("\n\tstore i32 %s, i32* %%l%d", expValue, reg);
-                var.assigned = true;
-            } else {
-                currentToken--;
+            if(dim.size()>0){
+                array_memset(reg);
+                if (getNextToken().word.equals("=")){
+                    arrayInitVal(registerNum-1);
+                } else{
+                    currentToken--;
+                }
+                var.assigned=true;
+            }else {
+                System.out.printf("\n\t%%l%d = alloca i32", reg);
+                if (getNextToken().word.equals("=")) {
+                    InitVal();
+                    exp_format();
+                    System.out.printf("\n\tstore i32 %s, i32* %%l%d", expValue, reg);
+                    var.assigned = true;
+                } else{
+                    currentToken--;
+                }
             }
         }else{
             if(getNextToken().word.equals("=")){
-                InitVal();
-                System.out.printf("\n@%s = dso_local global i32 %s",var.name,expValue);
+                if(dim.size()>0){
+                    System.out.printf("\n@%s = dso_local global ",var.name);
+                    print_arrayDim(dim,0);
+                    System.out.print(" ");
+                    ConstInitVal();
+                }else {
+                    InitVal();
+                    System.out.printf("\n@%s = dso_local global i32 %s", var.name, expValue);
+                }
             }else{
-                System.out.printf("\n@%s = dso_local global i32 0",var.name);
                 currentToken--;
+                if(dim.size()>0){
+                    System.out.printf("\n@%s = dso_local global ",var.name);
+                    print_arrayDim(dim,0);
+                    System.out.print(" zeroinitializer");
+                }else {
+                    System.out.printf("\n@%s = dso_local global i32 0", var.name);
+                }
+
             }
             var.assigned=true;
 
         }
+        if(dim.size()>0){
+            dim =new ArrayList<>();
+            dim_current=new ArrayList<>();
+        }
+
         register_map.put(name,var);
-        //variable_list.add(var);
+    }
+    public void arrayInitVal(int reg)throws Exception{
+        if(getNextToken().word.equals("{")){
+            array_level++;
+            if(array_level>dim.size()-1){
+                throw new Exception("out of the max dim of Array");
+            }
+            if(!getNextToken().word.equals("}")){
+
+                currentToken--;
+                arrayInitVal(reg);
+                dim_current.set(array_level,dim_current.get(array_level)+1);
+                while(getNextToken().word.equals(",")){
+                    arrayInitVal(reg);
+                    dim_current.set(array_level,dim_current.get(array_level)+1);
+                }
+                currentToken--;
+
+                if(!getNextToken().word.equals("}")){
+                    System.out.println("Missing RBra of ArrayInit in ConstInitval ");
+                }
+
+            }else{
+                dim_current.set(array_level,dim.get(array_level));
+            }
+            dim_current.set(array_level,0);
+            array_level--;
+        }else {
+            currentToken--;
+            Exp();
+            expValue=calculator.compute(expression.toString());
+            exp_format();
+            expression=new StringBuilder("");
+            int position=0;
+            for(int i=0;i<dim.size()-1;i++){
+                position+=dim_current.get(i)*dim.get(i+1);
+            }
+            position+=dim_current.get(dim.size()-1);
+            System.out.printf("\n\t%%l%d = getelementptr i32, i32* %%l%d, i32 %d",registerNum,reg,position);
+            System.out.printf("\n\tstore i32 %s, i32* %%l%d",expValue,registerNum);
+            registerNum++;
+        }
     }
     public void InitVal()throws Exception{
         Exp();
@@ -278,7 +481,7 @@ public class Parser {
             System.out.printf("\n\tbr label %%Label_whileEnd_%d",stack_label_while.peek());
         } else if(token.word.equals("continue")){
             System.out.printf("\n\tbr label %%Label_while_%d",stack_label_while.peek());
-        } else if(token_list.get(currentToken+1).word.equals("=")){
+        } else if(token.id.equals("Ident")){
             String name=token.word;
             Map<String,Variable> varMap=isDeclared(name);
             if(varMap==null){
@@ -289,7 +492,10 @@ public class Parser {
                 throw new Exception("Can't change the value of Const variable");
             }
             String reg;
-            if(varMap==global_map){
+            if(getNextToken().word.equals("[")){
+                currentToken--;
+                reg=getElementPtr(var);
+            }else if(varMap==global_map){
                 reg="@"+var.name;
             }else {
                 reg="%l"+var.reg;
@@ -542,6 +748,7 @@ public class Parser {
     }
     public void UnaryExp()throws Exception{
         Token token=getNextToken();
+
         if(token.id.equals("UnaryOp")){
             if(token.word.equals("!")){
                 count_Not++;
@@ -573,7 +780,12 @@ public class Parser {
                     }
                     expression.append(var.constValue);
                 } else{
-                    System.out.printf("\n\t%%t%d = load i32, i32* @%s",registerNum_temp,var.name);
+                    if(token_list.get(currentToken+1).word.equals("[")){
+                        String ptr=getElementPtr(var);
+                        System.out.printf("\n\t%%t%d = load i32, i32* %s",registerNum_temp,ptr);
+                    }else{
+                        System.out.printf("\n\t%%t%d = load i32, i32* @%s",registerNum_temp,var.name);
+                    }
                     expression.append("t"+registerNum_temp);
                     registerNum_temp++;
                 }
@@ -585,7 +797,14 @@ public class Parser {
                 if((!var.assigned)){
                     throw new Exception("variable in UnaryExp hasn't been assigned");
                 }
-                expression.append("v"+varMap.get(var.name).reg);
+                if(token_list.get(currentToken+1).word.equals("[")){
+                    String ptr=getElementPtr(var);
+                    System.out.printf("\n\t%%t%d = load i32, i32* %s",registerNum_temp,ptr);
+                    expression.append("t"+registerNum_temp);
+                    registerNum_temp++;
+                }else{
+                    expression.append("v"+varMap.get(var.name).reg);
+                }
             }
         } else if(token.word.equals("(")){
             expression.append(token.word);
@@ -598,6 +817,30 @@ public class Parser {
         }else{
             throw new Exception("UnaryExp error");
         }
+    }
+    public String getElementPtr(Variable var)throws Exception{
+        System.out.printf("\n\t%%t%d = getelementptr ",registerNum_temp);
+        registerNum_temp++;
+        print_arrayDim(var.dim,0);
+        System.out.print(", ");
+        print_arrayDim(var.dim,0);
+        if(isDeclared(var.name)==global_map){
+            System.out.printf("* @%s, i32 0",var.name);
+        }else{
+            System.out.printf("* %%l%d, i32 0",var.reg);
+        }
+        while(getNextToken().word.equals("[")){
+            Exp();
+            expValue=calculator.compute(expression.toString());
+            exp_format();
+            expression=new StringBuilder("");
+            System.out.printf(" ,i32 %s",expValue);
+            if(!getNextToken().word.equals("]")){
+                throw new Exception("Missing RBra of Array index in getElementPtr()");
+            }
+        }
+        currentToken--;
+        return "%t"+ (registerNum_temp - 1);
     }
     public void exp_format(){
         if(expValue.startsWith("v")){

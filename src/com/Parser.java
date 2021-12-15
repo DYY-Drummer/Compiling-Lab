@@ -492,8 +492,7 @@ public class Parser {
                 throw new Exception("Can't change the value of Const variable");
             }
             String reg;
-            if(getNextToken().word.equals("[")){
-                currentToken--;
+            if(token_list.get(currentToken+1).word.equals("[")){
                 reg=getElementPtr(var);
             }else if(varMap==global_map){
                 reg="@"+var.name;

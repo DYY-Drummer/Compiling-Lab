@@ -539,7 +539,10 @@ public class Parser {
     public boolean isAssign(){
         int currentToken_save=currentToken+1;
         while(token_list.get(currentToken_save).word.equals("[")){
-            currentToken_save+=2;
+            while(!token_list.get(currentToken_save).word.equals("]")){
+                currentToken_save++;
+            }
+            currentToken_save++;
         }
         return token_list.get(currentToken_save).word.equals("=");
     }

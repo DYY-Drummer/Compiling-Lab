@@ -11,14 +11,15 @@ public class Test {
             BufferedReader reader=new BufferedReader(new FileReader(input));
             PrintStream outputStream=new PrintStream(output);
             //System.setOut(outputStream);
-            System.out.println("declare i32 @getch()\n"+"declare void @putch(i32)\n"+"declare void @putint(i32)\n"+"declare i32 @getint()\n"+"declare void @memset(i32*, i32, i32)");
+            System.out.println("declare i32 @getch()\n"+"declare void @putch(i32)\n"+"declare void @putint(i32)\n"+"declare i32 @getint()\n"+"declare void @memset(i32*, i32, i32)\n"+"declare i32 @getarray(i32*)\n"+
+            "declare void @putarray(i32, i32*)");
             Tokenizer tokenizer=new Tokenizer();
 
             String temp;
 
             //separate token
             while((temp=reader.readLine())!=null) {
-                System.out.print("  "+temp+"\n");
+                //System.out.print("  "+temp+"\n");
                 tokenizer.analyze(temp);
             }
             tokenizer.token_list.add(new Token("END","#"));

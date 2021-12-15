@@ -531,21 +531,33 @@ public class Parser {
             expression=new StringBuilder("");
 
             if(!getNextToken().word.equals(";")){
+                System.out.println();
+                for(int i=currentToken-5;i<currentToken+10;i++){
+                    System.out.printf(token_list.get(i).word);
+                }
                 throw new Exception("Missing ';' after Exp in Stmt");
             }
         }
 
     }
     public boolean isAssign(){
-        int currentToken_save=currentToken+1;
-        while(token_list.get(currentToken_save).word.equals("[")){
-            while(!token_list.get(currentToken_save).word.equals("]")){
-                currentToken_save++;
-            }
+        int currentToken_save=currentToken;
+        int flag=0;
+        if(token_list.get(currentToken_save+1).word.equals("[")){
+            flag++;
             currentToken_save++;
         }
-        return token_list.get(currentToken_save).word.equals("=");
+        while(flag>0||token_list.get(currentToken_save+1).word.equals("[")){
+            currentToken_save++;
+            if(token_list.get(currentToken_save).word.equals("[")){
+                flag++;
+            }else if(token_list.get(currentToken_save).word.equals("]")){
+                flag--;
+            }
+        }
+        return token_list.get(currentToken_save+1).word.equals("=");
     }
+
     public void If() throws Exception{
         isWhile_old=isWhile;
         if(!token_list.get(currentToken-1).word.equals("else")){

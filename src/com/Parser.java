@@ -481,7 +481,7 @@ public class Parser {
             System.out.printf("\n\tbr label %%Label_whileEnd_%d",stack_label_while.peek());
         } else if(token.word.equals("continue")){
             System.out.printf("\n\tbr label %%Label_while_%d",stack_label_while.peek());
-        } else if(token.id.equals("Ident")){
+        } else if(isAssign()){
             String name=token.word;
             Map<String,Variable> varMap=isDeclared(name);
             if(varMap==null){
@@ -526,13 +526,23 @@ public class Parser {
         } else if(token.word.equals(";")){
 
         } else{
+            currentToken--;
             Exp();
+            expValue=calculator.compute(expression.toString());
             expression=new StringBuilder("");
+
             if(!getNextToken().word.equals(";")){
                 throw new Exception("Missing ';' after Exp in Stmt");
             }
         }
 
+    }
+    public boolean isAssign(){
+        int currentToken_save=currentToken+1;
+        while(token_list.get(currentToken_save).word.equals("[")){
+            currentToken_save+=2;
+        }
+        return token_list.get(currentToken_save).word.equals("=");
     }
     public void If() throws Exception{
         isWhile_old=isWhile;
@@ -819,6 +829,21 @@ public class Parser {
         }
     }
     public String getElementPtr(Variable var)throws Exception{
+
+        ArrayList<String> index=new ArrayList<>();
+        while(getNextToken().word.equals("[")){
+            StringBuilder expression_save=expression;
+            expression=new StringBuilder("");
+            Exp();
+            expValue=calculator.compute(expression.toString());
+            exp_format();
+            expression=expression_save;
+            index.add(expValue);
+            if(!getNextToken().word.equals("]")){
+                throw new Exception("Missing RBra of Array index in getElementPtr()");
+            }
+        }
+        currentToken--;
         System.out.printf("\n\t%%t%d = getelementptr ",registerNum_temp);
         registerNum_temp++;
         print_arrayDim(var.dim,0);
@@ -829,17 +854,9 @@ public class Parser {
         }else{
             System.out.printf("* %%l%d, i32 0",var.reg);
         }
-        while(getNextToken().word.equals("[")){
-            Exp();
-            expValue=calculator.compute(expression.toString());
-            exp_format();
-            expression=new StringBuilder("");
-            System.out.printf(" ,i32 %s",expValue);
-            if(!getNextToken().word.equals("]")){
-                throw new Exception("Missing RBra of Array index in getElementPtr()");
-            }
+        for(String i:index){
+            System.out.printf(" ,i32 %s",i);
         }
-        currentToken--;
         return "%t"+ (registerNum_temp - 1);
     }
     public void exp_format(){

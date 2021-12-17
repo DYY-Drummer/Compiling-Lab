@@ -34,6 +34,8 @@ public class Parser {
     ArrayList<Integer> dim = new ArrayList<>();
     ArrayList<Integer> dim_current =new ArrayList<>();
     int array_level;
+    boolean FParamInit;
+    ArrayList<Variable> copyFParam;
     public Token getNextToken()throws Exception{
         currentToken++;
         if(currentToken>token_list.size()-1){
@@ -48,54 +50,125 @@ public class Parser {
 //            System.out.printf("%s ",token_list.get(i).word);
 //        }
         currentToken=-1;
-        registerNum=1;
-        registerNum_temp=1;
         label_cond=1;
         label_or=1;
         label_and=1;
         label_stmt=1;
         label_while=1;
         register_map=global_map;
+        stack_block.push(global_map);
         isWhile=false;
-        while (!token_list.get(currentToken+2).word.equals("main")){
-            Decl();
+        FParamInit=false;
+        while(!token_list.get(currentToken+1).word.equals("#")){
+            if(currentToken<token_list.size()-5&&token_list.get(currentToken+3).word.equals("(")){
+                FuncDef();
+            }else {
+                Decl();
+            }
         }
-        FuncDef();
     }
+    int paramsNum;
     public void FuncDef() throws Exception{
+        registerNum=1;
+        registerNum_temp=1;
+        register_map=new HashMap<>();
+        copyFParam=new ArrayList<>();
+        paramsNum=0;
+        stack_block.push(register_map);
         System.out.print("\ndefine dso_local");
-        FuncType();
-        Ident();
+        Variable funcVar=new Variable("",false,0);
+        FuncType(funcVar);
+        FuncIdent(funcVar);
         if(getNextToken().word.equals("(")){
             System.out.print("(");
         }
         else {
-            throw new Exception("wrong def format");
+            throw new Exception("Missing LPar of FunDef");
         }
-        if(getNextToken().word.equals(")")){
-            System.out.print(")");
+        if (!getNextToken().word.equals(")")){
+            currentToken--;
+            FuncFParams();
         }
-        else {
-            throw new Exception("wrong def format");
-        }
-        System.out.print("{");
+        funcVar.paramsNum=paramsNum;
+        System.out.print(") {");
+
+        copyFParam();
+        copyFParam=new ArrayList<>();
         Block();
         System.out.print("\n}");
     }
-    public void FuncType() throws Exception{
+    public void FuncFParams()throws Exception{
+        FParamInit=true;
+        FuncFParam();
+        paramsNum++;
+        while(getNextToken().word.equals(",")){
+            System.out.print(", ");
+            FuncFParam();
+            paramsNum++;
+        }
+        FParamInit=false;
+    }
+    public void FuncFParam()throws Exception{
+        if(!getNextToken().word.equals("int")){
+            throw new Exception("Wrong BType in FuncFParam");
+        }
+        String varName=getNextToken().word;
+        Variable var =new Variable(varName,false,registerNum);
+        if(token_list.get(currentToken+1).word.equals("[")){
+            ArrayList<Integer> dim=new ArrayList<>();
+            currentToken+=2;
+            while(getNextToken().word.equals("[")){
+                ConstExp();
+                dim.add(Integer.parseInt(expValue));
+                if(!getNextToken().word.equals("]")){
+                    throw new Exception("Missing RBra of Array in FuncFParam");
+                }
+            }
+            currentToken--;
+            print_arrayDim(dim,0);
+            var.dim=dim;
+            var.isFParam=true;
+            System.out.printf("* %%l%d",registerNum);
+        }else {
+            System.out.printf("i32 %%l%d",registerNum);
+            copyFParam.add(var);
+        }
+        var.assigned=true;
+        register_map .put(varName,var);
+        registerNum++;
+    }
+    public void copyFParam(){
+
+        for(Variable i:copyFParam){
+            System.out.printf("\n\t%%l%d = alloca i32",registerNum);
+            System.out.printf("\n\tstore i32 %%l%d, i32* %%l%d",i.reg,registerNum);
+            i.reg=registerNum;
+            registerNum++;
+        }
+
+
+    }
+    public void FuncType(Variable var) throws Exception{
         Token token=getNextToken();
         if(token.word.equals("int")){
             System.out.print(" i32");
+            var.isVoid=false;
+        }else if (token.word.equals("void")){
+            System.out.print(" void");
+            var.isVoid=true;
         }
         else{
             throw new Exception("wrong FuncType");
         }
     }
-    public void Ident() throws Exception{
-        Token token=getNextToken();
-        if(token.word.equals("main")){
-            System.out.print(" @main");
+    public void FuncIdent(Variable var) throws Exception{
+        String funcName=getNextToken().word;
+        if(global_map.containsKey(funcName)){
+            throw new Exception("duplicate FuncIdent");
         }
+        var.name=funcName;
+        global_map.put(funcName,var);
+        System.out.printf("@%s",funcName);
     }
     public void Block() throws Exception{
         if(!getNextToken().word.equals("{")){
@@ -111,11 +184,7 @@ public class Parser {
             BlockItem();
         }
         stack_block.removeLast();
-        if(!stack_block.isEmpty()){
-            register_map=stack_block.getLast();
-        }else{
-            register_map=global_map;
-        }
+        register_map=stack_block.getLast();
     }
     public void BlockItem()throws Exception{
         Token token=getNextToken();
@@ -247,14 +316,30 @@ public class Parser {
     }
 
     public void print_arrayDim(ArrayList<Integer> dim,int i){
-        if(i<dim.size()-1){
+        if(dim.size()==0){
+            System.out.print("i32");
+        }else if(i<dim.size()-1){
             System.out.printf("[%d x ",dim.get(i));
             print_arrayDim(dim,i+1);
             System.out.print("]");
-
         }else{
             System.out.printf("[%d x i32]",dim.get(i));
+
         }
+    }
+
+    public String string_arrayDim(ArrayList<Integer> dim,int i){
+        StringBuilder arrayFormat=new StringBuilder("");
+        if(dim.size()==0){
+            arrayFormat.append("i32* ");
+        }else if(i<dim.size()-1){
+            arrayFormat.append("["+dim.get(i)+" x ");
+            arrayFormat.append(string_arrayDim(dim,i+1));
+            arrayFormat.append("]");
+        }else{
+            arrayFormat.append("i32");
+        }
+        return arrayFormat.toString();
     }
     public void ConstInitVal()throws Exception{
         constInit=true;
@@ -312,10 +397,10 @@ public class Parser {
     }
     public void ConstExp()throws Exception{
         AddExp();
-        if(register_map!=global_map) {
-            expValue = calculator.compute(expression.toString());
-        }else{
+        if(register_map==global_map||FParamInit) {
             expValue=constCalculator.compute(expression.toString());
+        }else{
+            expValue = calculator.compute(expression.toString());
         }
         expression=new StringBuilder("");
     }
@@ -351,7 +436,9 @@ public class Parser {
                 throw new Exception("Missing RBra of Array in VarDef");
             }
         }
-        var.dim=dim;
+        if(dim.size()>0){
+            var.dim=dim;
+        }
         currentToken--;
         array_level=-1;
         for(int i=0;i<dim.size();i++){
@@ -515,6 +602,11 @@ public class Parser {
                 putint();
             }else if(token.word.equals("putch")){
                 putch();
+            }else if(token.word.equals("getarray")){
+                getarray();
+                registerNum_temp++;
+            }else if(token.word.equals("putarray")){
+                putarray();
             }
             if(!getNextToken().word.equals(";")){
                 throw new Exception("Missing ';' after Func in Stmt");
@@ -785,22 +877,40 @@ public class Parser {
         } else if(token.id.equals("Func")){
             if(token.word.equals("getint")){
                 getint();
-                expression.append("t"+registerNum_temp);
-                registerNum_temp++;
             }else if(token.word.equals("getch")){
                 getch();
-                expression.append("t"+registerNum_temp);
-                registerNum_temp++;
+            }else if(token.word.equals("getarray")){
+                getarray();
             }
+            expression.append("t"+registerNum_temp);
+            registerNum_temp++;
         } else if(token.id.equals("Ident")){
             Map<String,Variable> varMap=isDeclared(token.word);
             if(varMap==null){
-                throw new Exception("variable in UnaryExp hasn't been declared");
+                throw new Exception("Ident in UnaryExp hasn't been declared");
+            } else if(token_list.get(currentToken+1).word.equals("(")){
+                Func();
+                if(!global_map.containsKey(token.word)){
+                    System.out.println("\n----------"+token.word);
+                    throw new Exception("Undeclared Func name");
+                }
+                Variable var=global_map.get(token.word);
+                if(RParamsNum!=var.paramsNum){
+                    throw new Exception("RParams' number is not the same as FParam's number");
+                }
+                if(var.isVoid){
+                    System.out.printf("\n\tcall void @%s(%s)",var.name,RParamsInit.toString());
+                    expression.append("0");
+                }else {
+                    System.out.printf("\n\t%%t%d = call int @%s(%s)",registerNum_temp,var.name,RParamsInit.toString());
+                    expression.append("t"+registerNum_temp);
+                    registerNum_temp++;
+                }
             } else if(varMap==global_map){
                 Variable var=varMap.get(token.word);
-                if(globalInit){
+                if(globalInit||FParamInit){
                     if(!var.isConst) {
-                        throw new Exception("Global val can't be init by var");
+                        throw new Exception("Global(or FParam) val can't be init by var");
                     }
                     expression.append(var.constValue);
                 } else{
@@ -864,12 +974,18 @@ public class Parser {
         System.out.print(", ");
         print_arrayDim(var.dim,0);
         if(isDeclared(var.name)==global_map){
-            System.out.printf("* @%s, i32 0",var.name);
+            System.out.printf("* @%s",var.name);
         }else{
-            System.out.printf("* %%l%d, i32 0",var.reg);
+            System.out.printf("* %%l%d",var.reg);
+        }
+        if(!var.isFParam){
+            System.out.print(", i32 0");
         }
         for(String i:index){
-            System.out.printf(" ,i32 %s",i);
+            System.out.printf(", i32 %s",i);
+        }
+        for(int i=index.size();i<var.dim.size();i++){
+            System.out.print(", i32 0");
         }
         return "%t"+ (registerNum_temp - 1);
     }
@@ -894,6 +1010,64 @@ public class Parser {
         }
         return null;
     }
+    int RParamsNum;
+    public void Func()throws Exception{
+        currentToken++;
+        RParamsInit=new StringBuilder("");
+        RParamsNum=0;
+        if(!token_list.get(currentToken+1).word.equals(")")){
+            FuncRParams();
+        }
+        if(!getNextToken().word.equals(")")){
+            throw new Exception("Missing RPar of FuncRParams");
+        }
+    }
+    StringBuilder RParamsInit;
+    int dimCount;
+    public void FuncRParams()throws Exception{
+       FuncRParam();
+       RParamsNum++;
+       while(getNextToken().word.equals(",")){
+           RParamsInit.append(", ");
+           FuncRParam();
+           RParamsNum++;
+       }
+       currentToken--;
+    }
+    public void FuncRParam()throws Exception{
+        String varName = getNextToken().word;
+
+
+        if(isPtrParam(varName)){
+            Variable var=isDeclared(varName).get(varName);
+            RParamsInit.append(string_arrayDim(var.dim, dimCount)+"* "+getElementPtr(var));
+        }else{
+            currentToken--;
+            RParamsInit.append("i32 ");
+            Exp();
+            expValue=calculator.compute(expression.toString());
+            exp_format();
+            expression=new StringBuilder("");
+            RParamsInit.append(expValue);
+        }
+    }
+    public boolean isPtrParam(String varName){
+        Map<String,Variable> varMap=isDeclared(varName);
+        if(varMap==null){
+            return false;
+        }
+        Variable var=varMap.get(varName);
+        int currentToken_temp=currentToken+1;
+        dimCount=0;
+        while(token_list.get(currentToken_temp).word.equals("[")){
+            dimCount++;
+            while(!token_list.get(currentToken_temp).word.equals("]")){
+                currentToken_temp++;
+            }
+            currentToken_temp++;
+        }
+        return var.dim != null && dimCount < var.dim.size();
+    }
     public void putch()throws Exception{
         currentToken++;
         Exp();
@@ -912,6 +1086,17 @@ public class Parser {
         System.out.printf("\n\tcall void @putint(i32 %s)",expValue);
         currentToken++;
     }
+    public void putarray()throws Exception{
+        RParamsInit=new StringBuilder("");
+        RParamsNum=0;
+        currentToken++;
+        FuncRParams();
+        if(RParamsNum!=2){
+            throw new Exception("putarray(i32, i32*)'s RParams number is not 2");
+        }
+        currentToken++;
+        System.out.printf("\n\tcall i32 @putarray(%s)",RParamsInit.toString());
+    }
     public void getint(){
         System.out.printf("\n\t%%t%d = call i32 @getint()",registerNum_temp);
         currentToken+=2;
@@ -919,6 +1104,17 @@ public class Parser {
     public void getch(){
         System.out.printf("\n\t%%t%d = call i32 @getch()",registerNum_temp);
         currentToken+=2;
+    }
+    public void getarray()throws Exception{
+        RParamsInit=new StringBuilder("");
+        RParamsNum=0;
+        currentToken++;
+        FuncRParams();
+        if(RParamsNum!=1){
+            throw new Exception("getarray(i32*)'s RParams number is not 1");
+        }
+        currentToken++;
+        System.out.printf("\n\t%%t%d = call i32 @getarray(%s)",registerNum_temp,RParamsInit.toString());
     }
 }
 

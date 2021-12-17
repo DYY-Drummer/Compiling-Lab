@@ -8,7 +8,10 @@ public class Variable {
     boolean assigned=false;
     int reg;
     int constValue;
+    boolean isVoid;
+    boolean isFParam=false;
     ArrayList<Integer> dim;
+    int paramsNum;
     public Variable(String name,boolean isConst,int reg){
         this.name=name;
         this.isConst=isConst;

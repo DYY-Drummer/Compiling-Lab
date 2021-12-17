@@ -902,7 +902,7 @@ public class Parser {
                     System.out.printf("\n\tcall void @%s(%s)",var.name,RParamsInit.toString());
                     expression.append("0");
                 }else {
-                    System.out.printf("\n\t%%t%d = call int @%s(%s)",registerNum_temp,var.name,RParamsInit.toString());
+                    System.out.printf("\n\t%%t%d = call i32 @%s(%s)",registerNum_temp,var.name,RParamsInit.toString());
                     expression.append("t"+registerNum_temp);
                     registerNum_temp++;
                 }

@@ -95,7 +95,7 @@ public class Parser {
         copyFParam();
         copyFParam=new ArrayList<>();
         Block();
-        System.out.print("\n\t%nothing = add i32 0, 0\n}");
+        System.out.print("\n\tret i32 0\n}");
     }
     public void FuncFParams()throws Exception{
         FParamInit=true;

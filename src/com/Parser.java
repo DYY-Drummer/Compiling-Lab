@@ -95,7 +95,7 @@ public class Parser {
         copyFParam();
         copyFParam=new ArrayList<>();
         Block();
-        System.out.print("\n}");
+        System.out.print("\n\tret\n}");
     }
     public void FuncFParams()throws Exception{
         FParamInit=true;

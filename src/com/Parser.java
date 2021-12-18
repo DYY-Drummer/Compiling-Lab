@@ -629,8 +629,10 @@ public class Parser {
         } else{
             currentToken--;
             Exp();
-            expValue=calculator.compute(expression.toString());
-            expression=new StringBuilder("");
+            if(!expression.toString().equals("")){
+                expValue=calculator.compute(expression.toString());
+                expression=new StringBuilder("");
+            }
 
             if(!getNextToken().word.equals(";")){
                 System.out.println();
@@ -910,7 +912,6 @@ public class Parser {
                 }
                 if(var.isVoid){
                     System.out.printf("\n\tcall void @%s(%s)",var.name,RParamsInit.toString());
-                    expression.append("0");
                 }else {
                     System.out.printf("\n\t%%t%d = call i32 @%s(%s)",registerNum_temp,var.name,RParamsInit.toString());
                     expression.append("t"+registerNum_temp);

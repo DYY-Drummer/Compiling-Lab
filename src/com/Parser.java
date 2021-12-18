@@ -1000,9 +1000,10 @@ public class Parser {
         for(String i:index){
             System.out.printf(", i32 %s",i);
         }
-        /*for(int i=index.size();i<var.dim.size();i++){
+        for(int i=index.size();i<var.dim.size();i++){
             System.out.print(", i32 0");
-        }*/
+            break;
+        }
         return "%t"+ (registerNum_temp - 1);
     }
     public void exp_format(){

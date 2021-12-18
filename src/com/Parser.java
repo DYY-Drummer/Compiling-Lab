@@ -56,7 +56,7 @@ public class Parser {
         label_stmt=1;
         label_while=1;
         register_map=global_map;
-        stack_block.push(global_map);
+        stack_block.addLast(global_map);
         isWhile=false;
         FParamInit=false;
         while(!token_list.get(currentToken+1).word.equals("#")){
@@ -74,7 +74,7 @@ public class Parser {
         register_map=new HashMap<>();
         copyFParam=new ArrayList<>();
         paramsNum=0;
-        stack_block.push(register_map);
+        stack_block.addLast(register_map);
         System.out.print("\ndefine dso_local");
         Variable funcVar=new Variable("",false,0);
         FuncType(funcVar);
@@ -101,6 +101,7 @@ public class Parser {
             System.out.print("\n\tret i32 0");
         }
         System.out.print("\n}");
+        stack_block.removeLast();
     }
     public void FuncFParams()throws Exception{
         FParamInit=true;

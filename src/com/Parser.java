@@ -95,7 +95,12 @@ public class Parser {
         copyFParam();
         copyFParam=new ArrayList<>();
         Block();
-        System.out.print("\n\tret i32 0\n}");
+        if(funcVar.isVoid){
+            System.out.print("\n\tret void");
+        }else {
+            System.out.print("\n\tret i32 0");
+        }
+        System.out.print("\n}");
     }
     public void FuncFParams()throws Exception{
         FParamInit=true;

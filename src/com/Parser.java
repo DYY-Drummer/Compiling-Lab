@@ -35,6 +35,7 @@ public class Parser {
     ArrayList<Integer> dim_current =new ArrayList<>();
     int array_level;
     boolean FParamInit;
+    boolean RParamInit;
     ArrayList<Variable> copyFParam;
     public Token getNextToken()throws Exception{
         currentToken++;
@@ -999,9 +1000,9 @@ public class Parser {
         for(String i:index){
             System.out.printf(", i32 %s",i);
         }
-        for(int i=index.size();i<var.dim.size();i++){
+        /*for(int i=index.size();i<var.dim.size();i++){
             System.out.print(", i32 0");
-        }
+        }*/
         return "%t"+ (registerNum_temp - 1);
     }
     public void exp_format(){

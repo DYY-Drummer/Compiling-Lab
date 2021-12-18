@@ -1108,6 +1108,7 @@ public class Parser {
         expValue=calculator.compute(expression.toString());
         expression=new StringBuilder("");
         exp_format();
+        System.out.printf("\n\tcall void @putint(i32 666)");
         System.out.printf("\n\tcall void @putint(i32 %s)",expValue);
         currentToken++;
     }

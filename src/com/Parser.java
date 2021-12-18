@@ -1096,7 +1096,7 @@ public class Parser {
             throw new Exception("putarray(i32, i32*)'s RParams number is not 2");
         }
         currentToken++;
-        System.out.printf("\n\tcall i32 @putarray(%s)",RParamsInit.toString());
+        System.out.printf("\n\tcall void @putarray(%s)",RParamsInit.toString());
     }
     public void getint(){
         System.out.printf("\n\t%%t%d = call i32 @getint()",registerNum_temp);

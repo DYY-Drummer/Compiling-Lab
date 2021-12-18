@@ -338,7 +338,7 @@ public class Parser {
             arrayFormat.append(string_arrayDim(dim,i+1));
             arrayFormat.append("]");
         }else{
-            arrayFormat.append("i32");
+            arrayFormat.append("i32* ");
         }
         return arrayFormat.toString();
     }

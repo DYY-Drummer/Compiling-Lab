@@ -557,13 +557,17 @@ public class Parser {
     public void Stmt() throws Exception{
         Token token=getNextToken();
         if(token.word.equals("return")){
-            Exp();
-            expValue=calculator.compute(expression.toString());
-            expression=new StringBuilder("");
-            exp_format();
-            System.out.printf("\n\tret i32 %s",expValue);
+            if(token_list.get(currentToken+1).word.equals(";")){
+                System.out.print("\n\tret void");
+            }else {
+                Exp();
+                expValue = calculator.compute(expression.toString());
+                expression = new StringBuilder("");
+                exp_format();
+                System.out.printf("\n\tret i32 %s", expValue);
+            }
             if(!getNextToken().word.equals(";")){
-                throw new Exception("Missing ';' after Exp in return");
+                throw new Exception("Missing ';' after return in Stmt");
             }
 
         } else if(token.word.equals("if")){

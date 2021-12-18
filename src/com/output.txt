@@ -1,0 +1,1260 @@
+declare i32 @getch()
+declare void @putch(i32)
+declare void @putint(i32)
+declare i32 @getint()
+declare void @memset(i32*, i32, i32)
+declare i32 @getarray(i32*)
+declare void @putarray(i32, i32*)
+
+define dso_local i32@relu_reg(i32 %l1) {
+	%l2 = alloca i32
+	store i32 %l1, i32* %l2
+	br label %Label_if_1_1
+
+Label_if_1_1:
+	%l3 = load i32, i32* %l2
+	%l4 = add i32 %l3, 0
+	%l5 = add i32 127, 0
+	%t1 = icmp sgt i32 %l4, %l5
+	br i1 %t1,label %Label_and_1, label %Label_or_1
+
+Label_and_1:
+	br i1 %t1,label %Label_stmt_1, label %Label_or_1
+
+Label_or_1:
+	br label %Label_if_2_1
+
+Label_stmt_1:
+	ret i32 127
+	br label %Label_cond_1
+
+Label_if_2_1:
+	br label %Label_cond_1
+
+Label_cond_1:
+	br label %Label_if_1_2
+
+Label_if_1_2:
+	%l6 = load i32, i32* %l2
+	%l7 = add i32 %l6, 0
+	%l8 = add i32 0, 0
+	%t2 = icmp slt i32 %l7, %l8
+	br i1 %t2,label %Label_and_2, label %Label_or_2
+
+Label_and_2:
+	br i1 %t2,label %Label_stmt_2, label %Label_or_2
+
+Label_or_2:
+	br label %Label_if_2_2
+
+Label_stmt_2:
+	ret i32 0
+	br label %Label_cond_2
+
+Label_if_2_2:
+	br label %Label_cond_2
+
+Label_cond_2:
+	%l9 = load i32, i32* %l2
+	ret i32 %l9
+	ret i32 0
+}
+define dso_local i32@model([5 x i32]* %l1) {
+	br label %Label_if_1_3
+
+Label_if_1_3:
+	%t1 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 0
+	%t2 = load i32, i32* %t1
+	%t3 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 1
+	%t4 = load i32, i32* %t3
+	%t5 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 2
+	%t6 = load i32, i32* %t5
+	%t7 = sub i32 0, 82
+	%t8 = mul i32 %t2, 85
+	%t9 = mul i32 %t4, 23
+	%t10 = mul i32 %t6, %t7
+	%t11 = add i32 0, %t8
+	%t12 = add i32 %t11, %t9
+	%t13 = add i32 %t12, %t10
+	%t14 = call i32 @relu_reg(i32 %t13)
+	%t15 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 0
+	%t16 = load i32, i32* %t15
+	%t17 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 1
+	%t18 = load i32, i32* %t17
+	%t19 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 2
+	%t20 = load i32, i32* %t19
+	%t21 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 3
+	%t22 = load i32, i32* %t21
+	%t23 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 4
+	%t24 = load i32, i32* %t23
+	%t25 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 0
+	%t26 = load i32, i32* %t25
+	%t27 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 1
+	%t28 = load i32, i32* %t27
+	%t29 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 2
+	%t30 = load i32, i32* %t29
+	%t31 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 3
+	%t32 = load i32, i32* %t31
+	%t33 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 4
+	%t34 = load i32, i32* %t33
+	%t35 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 0
+	%t36 = load i32, i32* %t35
+	%t37 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 1
+	%t38 = load i32, i32* %t37
+	%t39 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 2
+	%t40 = load i32, i32* %t39
+	%t41 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 3
+	%t42 = load i32, i32* %t41
+	%t43 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 4
+	%t44 = load i32, i32* %t43
+	%t45 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 0
+	%t46 = load i32, i32* %t45
+	%t47 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 1
+	%t48 = load i32, i32* %t47
+	%t49 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 2
+	%t50 = load i32, i32* %t49
+	%t51 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 3
+	%t52 = load i32, i32* %t51
+	%t53 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 4
+	%t54 = load i32, i32* %t53
+	%t55 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 0
+	%t56 = load i32, i32* %t55
+	%t57 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 1
+	%t58 = load i32, i32* %t57
+	%t59 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 2
+	%t60 = load i32, i32* %t59
+	%t61 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 3
+	%t62 = load i32, i32* %t61
+	%t63 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 4
+	%t64 = load i32, i32* %t63
+	%t65 = sub i32 0, 125
+	%t66 = sub i32 0, 75
+	%t67 = sub i32 0, 22
+	%t68 = sub i32 0, 100
+	%t69 = sub i32 0, 110
+	%t70 = sub i32 0, 31
+	%t71 = sub i32 0, 106
+	%t72 = sub i32 0, 42
+	%t73 = sub i32 0, 43
+	%t74 = sub i32 0, 60
+	%t75 = sub i32 0, 21
+	%t76 = sub i32 0, 121
+	%t77 = sub i32 0, 94
+	%t78 = sub i32 0, 4
+	%t79 = sub i32 0, 8
+	%t80 = sub i32 0, 31
+	%t81 = sub i32 0, 18
+	%t82 = sub i32 0, 106
+	%t83 = mul i32 %t16, %t82
+	%t84 = mul i32 %t18, 126
+	%t85 = mul i32 %t20, %t81
+	%t86 = mul i32 %t22, %t80
+	%t87 = mul i32 %t24, %t79
+	%t88 = mul i32 %t26, 47
+	%t89 = mul i32 %t28, %t78
+	%t90 = mul i32 %t30, 67
+	%t91 = mul i32 %t32, %t77
+	%t92 = mul i32 %t34, %t76
+	%t93 = mul i32 %t36, 7
+	%t94 = mul i32 %t38, %t75
+	%t95 = mul i32 %t40, %t74
+	%t96 = mul i32 %t42, %t73
+	%t97 = mul i32 %t44, 105
+	%t98 = mul i32 %t46, %t72
+	%t99 = mul i32 %t48, 87
+	%t100 = mul i32 %t50, 29
+	%t101 = mul i32 %t52, %t71
+	%t102 = mul i32 %t54, %t70
+	%t103 = mul i32 %t56, %t69
+	%t104 = mul i32 %t58, %t68
+	%t105 = mul i32 %t60, %t67
+	%t106 = mul i32 %t62, %t66
+	%t107 = mul i32 %t64, %t65
+	%t108 = add i32 0, %t83
+	%t109 = add i32 %t108, %t84
+	%t110 = add i32 %t109, %t85
+	%t111 = add i32 %t110, %t86
+	%t112 = add i32 %t111, %t87
+	%t113 = add i32 %t112, %t88
+	%t114 = add i32 %t113, %t89
+	%t115 = add i32 %t114, %t90
+	%t116 = add i32 %t115, %t91
+	%t117 = add i32 %t116, %t92
+	%t118 = add i32 %t117, %t93
+	%t119 = add i32 %t118, %t94
+	%t120 = add i32 %t119, %t95
+	%t121 = add i32 %t120, %t96
+	%t122 = add i32 %t121, %t97
+	%t123 = add i32 %t122, %t98
+	%t124 = add i32 %t123, %t99
+	%t125 = add i32 %t124, %t100
+	%t126 = add i32 %t125, %t101
+	%t127 = add i32 %t126, %t102
+	%t128 = add i32 %t127, %t103
+	%t129 = add i32 %t128, %t104
+	%t130 = add i32 %t129, %t105
+	%t131 = add i32 %t130, %t106
+	%t132 = add i32 %t131, %t107
+	%t133 = call i32 @relu_reg(i32 %t132)
+	%t134 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 0
+	%t135 = load i32, i32* %t134
+	%t136 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 1
+	%t137 = load i32, i32* %t136
+	%t138 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 2
+	%t139 = load i32, i32* %t138
+	%t140 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 3
+	%t141 = load i32, i32* %t140
+	%t142 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 4
+	%t143 = load i32, i32* %t142
+	%t144 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 0
+	%t145 = load i32, i32* %t144
+	%t146 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 1
+	%t147 = load i32, i32* %t146
+	%t148 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 2
+	%t149 = load i32, i32* %t148
+	%t150 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 3
+	%t151 = load i32, i32* %t150
+	%t152 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 4
+	%t153 = load i32, i32* %t152
+	%t154 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 0
+	%t155 = load i32, i32* %t154
+	%t156 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 1
+	%t157 = load i32, i32* %t156
+	%t158 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 2
+	%t159 = load i32, i32* %t158
+	%t160 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 3
+	%t161 = load i32, i32* %t160
+	%t162 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 4
+	%t163 = load i32, i32* %t162
+	%t164 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 0
+	%t165 = load i32, i32* %t164
+	%t166 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 1
+	%t167 = load i32, i32* %t166
+	%t168 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 2
+	%t169 = load i32, i32* %t168
+	%t170 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 3
+	%t171 = load i32, i32* %t170
+	%t172 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 4
+	%t173 = load i32, i32* %t172
+	%t174 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 0
+	%t175 = load i32, i32* %t174
+	%t176 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 1
+	%t177 = load i32, i32* %t176
+	%t178 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 2
+	%t179 = load i32, i32* %t178
+	%t180 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 3
+	%t181 = load i32, i32* %t180
+	%t182 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 4
+	%t183 = load i32, i32* %t182
+	%t184 = sub i32 0, 6
+	%t185 = sub i32 0, 39
+	%t186 = sub i32 0, 99
+	%t187 = sub i32 0, 63
+	%t188 = sub i32 0, 38
+	%t189 = sub i32 0, 34
+	%t190 = sub i32 0, 5
+	%t191 = sub i32 0, 68
+	%t192 = sub i32 0, 95
+	%t193 = sub i32 0, 70
+	%t194 = mul i32 %t135, 26
+	%t195 = mul i32 %t137, 76
+	%t196 = mul i32 %t139, %t193
+	%t197 = mul i32 %t141, 29
+	%t198 = mul i32 %t143, %t192
+	%t199 = mul i32 %t145, 96
+	%t200 = mul i32 %t147, 52
+	%t201 = mul i32 %t149, %t191
+	%t202 = mul i32 %t151, %t190
+	%t203 = mul i32 %t153, 34
+	%t204 = mul i32 %t155, %t189
+	%t205 = mul i32 %t157, 102
+	%t206 = mul i32 %t159, 6
+	%t207 = mul i32 %t161, %t188
+	%t208 = mul i32 %t163, 27
+	%t209 = mul i32 %t165, 110
+	%t210 = mul i32 %t167, 116
+	%t211 = mul i32 %t169, 39
+	%t212 = mul i32 %t171, %t187
+	%t213 = mul i32 %t173, %t186
+	%t214 = mul i32 %t175, 65
+	%t215 = mul i32 %t177, 120
+	%t216 = mul i32 %t179, %t185
+	%t217 = mul i32 %t181, %t184
+	%t218 = mul i32 %t183, 94
+	%t219 = add i32 0, %t194
+	%t220 = add i32 %t219, %t195
+	%t221 = add i32 %t220, %t196
+	%t222 = add i32 %t221, %t197
+	%t223 = add i32 %t222, %t198
+	%t224 = add i32 %t223, %t199
+	%t225 = add i32 %t224, %t200
+	%t226 = add i32 %t225, %t201
+	%t227 = add i32 %t226, %t202
+	%t228 = add i32 %t227, %t203
+	%t229 = add i32 %t228, %t204
+	%t230 = add i32 %t229, %t205
+	%t231 = add i32 %t230, %t206
+	%t232 = add i32 %t231, %t207
+	%t233 = add i32 %t232, %t208
+	%t234 = add i32 %t233, %t209
+	%t235 = add i32 %t234, %t210
+	%t236 = add i32 %t235, %t211
+	%t237 = add i32 %t236, %t212
+	%t238 = add i32 %t237, %t213
+	%t239 = add i32 %t238, %t214
+	%t240 = add i32 %t239, %t215
+	%t241 = add i32 %t240, %t216
+	%t242 = add i32 %t241, %t217
+	%t243 = add i32 %t242, %t218
+	%t244 = call i32 @relu_reg(i32 %t243)
+	%t245 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 0
+	%t246 = load i32, i32* %t245
+	%t247 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 1
+	%t248 = load i32, i32* %t247
+	%t249 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 2
+	%t250 = load i32, i32* %t249
+	%t251 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 3
+	%t252 = load i32, i32* %t251
+	%t253 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 4
+	%t254 = load i32, i32* %t253
+	%t255 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 0
+	%t256 = load i32, i32* %t255
+	%t257 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 1
+	%t258 = load i32, i32* %t257
+	%t259 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 2
+	%t260 = load i32, i32* %t259
+	%t261 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 3
+	%t262 = load i32, i32* %t261
+	%t263 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 4
+	%t264 = load i32, i32* %t263
+	%t265 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 0
+	%t266 = load i32, i32* %t265
+	%t267 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 1
+	%t268 = load i32, i32* %t267
+	%t269 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 2
+	%t270 = load i32, i32* %t269
+	%t271 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 3
+	%t272 = load i32, i32* %t271
+	%t273 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 4
+	%t274 = load i32, i32* %t273
+	%t275 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 0
+	%t276 = load i32, i32* %t275
+	%t277 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 1
+	%t278 = load i32, i32* %t277
+	%t279 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 2
+	%t280 = load i32, i32* %t279
+	%t281 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 3
+	%t282 = load i32, i32* %t281
+	%t283 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 4
+	%t284 = load i32, i32* %t283
+	%t285 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 0
+	%t286 = load i32, i32* %t285
+	%t287 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 1
+	%t288 = load i32, i32* %t287
+	%t289 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 2
+	%t290 = load i32, i32* %t289
+	%t291 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 3
+	%t292 = load i32, i32* %t291
+	%t293 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 4
+	%t294 = load i32, i32* %t293
+	%t295 = sub i32 0, 117
+	%t296 = sub i32 0, 32
+	%t297 = sub i32 0, 47
+	%t298 = sub i32 0, 23
+	%t299 = sub i32 0, 123
+	%t300 = sub i32 0, 31
+	%t301 = sub i32 0, 67
+	%t302 = sub i32 0, 65
+	%t303 = sub i32 0, 117
+	%t304 = sub i32 0, 30
+	%t305 = sub i32 0, 63
+	%t306 = sub i32 0, 23
+	%t307 = mul i32 %t246, %t306
+	%t308 = mul i32 %t248, %t305
+	%t309 = mul i32 %t250, 49
+	%t310 = mul i32 %t252, 50
+	%t311 = mul i32 %t254, 72
+	%t312 = mul i32 %t256, 85
+	%t313 = mul i32 %t258, %t304
+	%t314 = mul i32 %t260, 12
+	%t315 = mul i32 %t262, 125
+	%t316 = mul i32 %t264, %t303
+	%t317 = mul i32 %t266, %t302
+	%t318 = mul i32 %t268, %t301
+	%t319 = mul i32 %t270, 125
+	%t320 = mul i32 %t272, 110
+	%t321 = mul i32 %t274, %t300
+	%t322 = mul i32 %t276, %t299
+	%t323 = mul i32 %t278, 83
+	%t324 = mul i32 %t280, 122
+	%t325 = mul i32 %t282, 11
+	%t326 = mul i32 %t284, %t298
+	%t327 = mul i32 %t286, %t297
+	%t328 = mul i32 %t288, %t296
+	%t329 = mul i32 %t290, %t295
+	%t330 = mul i32 %t292, 95
+	%t331 = mul i32 %t294, 118
+	%t332 = add i32 0, %t307
+	%t333 = add i32 %t332, %t308
+	%t334 = add i32 %t333, %t309
+	%t335 = add i32 %t334, %t310
+	%t336 = add i32 %t335, %t311
+	%t337 = add i32 %t336, %t312
+	%t338 = add i32 %t337, %t313
+	%t339 = add i32 %t338, %t314
+	%t340 = add i32 %t339, %t315
+	%t341 = add i32 %t340, %t316
+	%t342 = add i32 %t341, %t317
+	%t343 = add i32 %t342, %t318
+	%t344 = add i32 %t343, %t319
+	%t345 = add i32 %t344, %t320
+	%t346 = add i32 %t345, %t321
+	%t347 = add i32 %t346, %t322
+	%t348 = add i32 %t347, %t323
+	%t349 = add i32 %t348, %t324
+	%t350 = add i32 %t349, %t325
+	%t351 = add i32 %t350, %t326
+	%t352 = add i32 %t351, %t327
+	%t353 = add i32 %t352, %t328
+	%t354 = add i32 %t353, %t329
+	%t355 = add i32 %t354, %t330
+	%t356 = add i32 %t355, %t331
+	%t357 = call i32 @relu_reg(i32 %t356)
+	%t358 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 0
+	%t359 = load i32, i32* %t358
+	%t360 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 1
+	%t361 = load i32, i32* %t360
+	%t362 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 2
+	%t363 = load i32, i32* %t362
+	%t364 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 3
+	%t365 = load i32, i32* %t364
+	%t366 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 4
+	%t367 = load i32, i32* %t366
+	%t368 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 0
+	%t369 = load i32, i32* %t368
+	%t370 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 1
+	%t371 = load i32, i32* %t370
+	%t372 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 2
+	%t373 = load i32, i32* %t372
+	%t374 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 3
+	%t375 = load i32, i32* %t374
+	%t376 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 4
+	%t377 = load i32, i32* %t376
+	%t378 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 0
+	%t379 = load i32, i32* %t378
+	%t380 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 1
+	%t381 = load i32, i32* %t380
+	%t382 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 2
+	%t383 = load i32, i32* %t382
+	%t384 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 3
+	%t385 = load i32, i32* %t384
+	%t386 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 4
+	%t387 = load i32, i32* %t386
+	%t388 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 0
+	%t389 = load i32, i32* %t388
+	%t390 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 1
+	%t391 = load i32, i32* %t390
+	%t392 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 2
+	%t393 = load i32, i32* %t392
+	%t394 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 3
+	%t395 = load i32, i32* %t394
+	%t396 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 4
+	%t397 = load i32, i32* %t396
+	%t398 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 0
+	%t399 = load i32, i32* %t398
+	%t400 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 1
+	%t401 = load i32, i32* %t400
+	%t402 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 2
+	%t403 = load i32, i32* %t402
+	%t404 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 3
+	%t405 = load i32, i32* %t404
+	%t406 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 4
+	%t407 = load i32, i32* %t406
+	%t408 = sub i32 0, 124
+	%t409 = sub i32 0, 93
+	%t410 = sub i32 0, 95
+	%t411 = sub i32 0, 114
+	%t412 = sub i32 0, 101
+	%t413 = sub i32 0, 96
+	%t414 = sub i32 0, 70
+	%t415 = sub i32 0, 16
+	%t416 = sub i32 0, 63
+	%t417 = sub i32 0, 116
+	%t418 = sub i32 0, 104
+	%t419 = mul i32 %t359, 8
+	%t420 = mul i32 %t361, 82
+	%t421 = mul i32 %t363, %t418
+	%t422 = mul i32 %t365, 101
+	%t423 = mul i32 %t367, %t417
+	%t424 = mul i32 %t369, %t416
+	%t425 = mul i32 %t371, %t415
+	%t426 = mul i32 %t373, %t414
+	%t427 = mul i32 %t375, 125
+	%t428 = mul i32 %t377, 75
+	%t429 = mul i32 %t379, 66
+	%t430 = mul i32 %t381, %t413
+	%t431 = mul i32 %t383, %t412
+	%t432 = mul i32 %t385, %t411
+	%t433 = mul i32 %t387, 59
+	%t434 = mul i32 %t389, 12
+	%t435 = mul i32 %t391, 5
+	%t436 = mul i32 %t393, %t410
+	%t437 = mul i32 %t395, 116
+	%t438 = mul i32 %t397, %t409
+	%t439 = mul i32 %t399, 15
+	%t440 = mul i32 %t401, 79
+	%t441 = mul i32 %t403, 3
+	%t442 = mul i32 %t405, 49
+	%t443 = mul i32 %t407, %t408
+	%t444 = add i32 0, %t419
+	%t445 = add i32 %t444, %t420
+	%t446 = add i32 %t445, %t421
+	%t447 = add i32 %t446, %t422
+	%t448 = add i32 %t447, %t423
+	%t449 = add i32 %t448, %t424
+	%t450 = add i32 %t449, %t425
+	%t451 = add i32 %t450, %t426
+	%t452 = add i32 %t451, %t427
+	%t453 = add i32 %t452, %t428
+	%t454 = add i32 %t453, %t429
+	%t455 = add i32 %t454, %t430
+	%t456 = add i32 %t455, %t431
+	%t457 = add i32 %t456, %t432
+	%t458 = add i32 %t457, %t433
+	%t459 = add i32 %t458, %t434
+	%t460 = add i32 %t459, %t435
+	%t461 = add i32 %t460, %t436
+	%t462 = add i32 %t461, %t437
+	%t463 = add i32 %t462, %t438
+	%t464 = add i32 %t463, %t439
+	%t465 = add i32 %t464, %t440
+	%t466 = add i32 %t465, %t441
+	%t467 = add i32 %t466, %t442
+	%t468 = add i32 %t467, %t443
+	%t469 = call i32 @relu_reg(i32 %t468)
+	%t470 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 0
+	%t471 = load i32, i32* %t470
+	%t472 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 1
+	%t473 = load i32, i32* %t472
+	%t474 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 2
+	%t475 = load i32, i32* %t474
+	%t476 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 3
+	%t477 = load i32, i32* %t476
+	%t478 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 4
+	%t479 = load i32, i32* %t478
+	%t480 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 0
+	%t481 = load i32, i32* %t480
+	%t482 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 1
+	%t483 = load i32, i32* %t482
+	%t484 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 2
+	%t485 = load i32, i32* %t484
+	%t486 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 3
+	%t487 = load i32, i32* %t486
+	%t488 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 4
+	%t489 = load i32, i32* %t488
+	%t490 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 0
+	%t491 = load i32, i32* %t490
+	%t492 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 1
+	%t493 = load i32, i32* %t492
+	%t494 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 2
+	%t495 = load i32, i32* %t494
+	%t496 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 3
+	%t497 = load i32, i32* %t496
+	%t498 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 4
+	%t499 = load i32, i32* %t498
+	%t500 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 0
+	%t501 = load i32, i32* %t500
+	%t502 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 1
+	%t503 = load i32, i32* %t502
+	%t504 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 2
+	%t505 = load i32, i32* %t504
+	%t506 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 3
+	%t507 = load i32, i32* %t506
+	%t508 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 4
+	%t509 = load i32, i32* %t508
+	%t510 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 0
+	%t511 = load i32, i32* %t510
+	%t512 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 1
+	%t513 = load i32, i32* %t512
+	%t514 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 2
+	%t515 = load i32, i32* %t514
+	%t516 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 3
+	%t517 = load i32, i32* %t516
+	%t518 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 4
+	%t519 = load i32, i32* %t518
+	%t520 = sub i32 0, 72
+	%t521 = sub i32 0, 54
+	%t522 = sub i32 0, 116
+	%t523 = sub i32 0, 112
+	%t524 = sub i32 0, 50
+	%t525 = sub i32 0, 16
+	%t526 = sub i32 0, 10
+	%t527 = sub i32 0, 21
+	%t528 = sub i32 0, 62
+	%t529 = sub i32 0, 13
+	%t530 = sub i32 0, 15
+	%t531 = sub i32 0, 74
+	%t532 = sub i32 0, 102
+	%t533 = mul i32 %t471, 81
+	%t534 = mul i32 %t473, 68
+	%t535 = mul i32 %t475, %t532
+	%t536 = mul i32 %t477, %t531
+	%t537 = mul i32 %t479, 121
+	%t538 = mul i32 %t481, %t530
+	%t539 = mul i32 %t483, 55
+	%t540 = mul i32 %t485, 101
+	%t541 = mul i32 %t487, %t529
+	%t542 = mul i32 %t489, %t528
+	%t543 = mul i32 %t491, 64
+	%t544 = mul i32 %t493, 114
+	%t545 = mul i32 %t495, 38
+	%t546 = mul i32 %t497, %t527
+	%t547 = mul i32 %t499, 112
+	%t548 = mul i32 %t501, 114
+	%t549 = mul i32 %t503, 112
+	%t550 = mul i32 %t505, %t526
+	%t551 = mul i32 %t507, %t525
+	%t552 = mul i32 %t509, %t524
+	%t553 = mul i32 %t511, %t523
+	%t554 = mul i32 %t513, %t522
+	%t555 = mul i32 %t515, %t521
+	%t556 = mul i32 %t517, 82
+	%t557 = mul i32 %t519, %t520
+	%t558 = add i32 0, %t533
+	%t559 = add i32 %t558, %t534
+	%t560 = add i32 %t559, %t535
+	%t561 = add i32 %t560, %t536
+	%t562 = add i32 %t561, %t537
+	%t563 = add i32 %t562, %t538
+	%t564 = add i32 %t563, %t539
+	%t565 = add i32 %t564, %t540
+	%t566 = add i32 %t565, %t541
+	%t567 = add i32 %t566, %t542
+	%t568 = add i32 %t567, %t543
+	%t569 = add i32 %t568, %t544
+	%t570 = add i32 %t569, %t545
+	%t571 = add i32 %t570, %t546
+	%t572 = add i32 %t571, %t547
+	%t573 = add i32 %t572, %t548
+	%t574 = add i32 %t573, %t549
+	%t575 = add i32 %t574, %t550
+	%t576 = add i32 %t575, %t551
+	%t577 = add i32 %t576, %t552
+	%t578 = add i32 %t577, %t553
+	%t579 = add i32 %t578, %t554
+	%t580 = add i32 %t579, %t555
+	%t581 = add i32 %t580, %t556
+	%t582 = add i32 %t581, %t557
+	%t583 = call i32 @relu_reg(i32 %t582)
+	%t584 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 0
+	%t585 = load i32, i32* %t584
+	%t586 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 1
+	%t587 = load i32, i32* %t586
+	%t588 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 2
+	%t589 = load i32, i32* %t588
+	%t590 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 3
+	%t591 = load i32, i32* %t590
+	%t592 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 4
+	%t593 = load i32, i32* %t592
+	%t594 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 0
+	%t595 = load i32, i32* %t594
+	%t596 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 1
+	%t597 = load i32, i32* %t596
+	%t598 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 2
+	%t599 = load i32, i32* %t598
+	%t600 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 3
+	%t601 = load i32, i32* %t600
+	%t602 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 4
+	%t603 = load i32, i32* %t602
+	%t604 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 0
+	%t605 = load i32, i32* %t604
+	%t606 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 1
+	%t607 = load i32, i32* %t606
+	%t608 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 2
+	%t609 = load i32, i32* %t608
+	%t610 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 3
+	%t611 = load i32, i32* %t610
+	%t612 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 4
+	%t613 = load i32, i32* %t612
+	%t614 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 0
+	%t615 = load i32, i32* %t614
+	%t616 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 1
+	%t617 = load i32, i32* %t616
+	%t618 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 2
+	%t619 = load i32, i32* %t618
+	%t620 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 3
+	%t621 = load i32, i32* %t620
+	%t622 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 4
+	%t623 = load i32, i32* %t622
+	%t624 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 0
+	%t625 = load i32, i32* %t624
+	%t626 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 1
+	%t627 = load i32, i32* %t626
+	%t628 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 2
+	%t629 = load i32, i32* %t628
+	%t630 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 3
+	%t631 = load i32, i32* %t630
+	%t632 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 4
+	%t633 = load i32, i32* %t632
+	%t634 = sub i32 0, 15
+	%t635 = sub i32 0, 13
+	%t636 = sub i32 0, 79
+	%t637 = sub i32 0, 33
+	%t638 = sub i32 0, 95
+	%t639 = sub i32 0, 110
+	%t640 = sub i32 0, 8
+	%t641 = sub i32 0, 30
+	%t642 = sub i32 0, 6
+	%t643 = sub i32 0, 90
+	%t644 = sub i32 0, 77
+	%t645 = mul i32 %t585, 15
+	%t646 = mul i32 %t587, %t644
+	%t647 = mul i32 %t589, 66
+	%t648 = mul i32 %t591, %t643
+	%t649 = mul i32 %t593, %t642
+	%t650 = mul i32 %t595, %t641
+	%t651 = mul i32 %t597, %t640
+	%t652 = mul i32 %t599, 81
+	%t653 = mul i32 %t601, 2
+	%t654 = mul i32 %t603, %t639
+	%t655 = mul i32 %t605, %t638
+	%t656 = mul i32 %t607, 59
+	%t657 = mul i32 %t609, 52
+	%t658 = mul i32 %t611, 15
+	%t659 = mul i32 %t613, 55
+	%t660 = mul i32 %t615, %t637
+	%t661 = mul i32 %t617, 14
+	%t662 = mul i32 %t619, 58
+	%t663 = mul i32 %t621, 67
+	%t664 = mul i32 %t623, 86
+	%t665 = mul i32 %t625, %t636
+	%t666 = mul i32 %t627, 48
+	%t667 = mul i32 %t629, %t635
+	%t668 = mul i32 %t631, %t634
+	%t669 = mul i32 %t633, 66
+	%t670 = add i32 0, %t645
+	%t671 = add i32 %t670, %t646
+	%t672 = add i32 %t671, %t647
+	%t673 = add i32 %t672, %t648
+	%t674 = add i32 %t673, %t649
+	%t675 = add i32 %t674, %t650
+	%t676 = add i32 %t675, %t651
+	%t677 = add i32 %t676, %t652
+	%t678 = add i32 %t677, %t653
+	%t679 = add i32 %t678, %t654
+	%t680 = add i32 %t679, %t655
+	%t681 = add i32 %t680, %t656
+	%t682 = add i32 %t681, %t657
+	%t683 = add i32 %t682, %t658
+	%t684 = add i32 %t683, %t659
+	%t685 = add i32 %t684, %t660
+	%t686 = add i32 %t685, %t661
+	%t687 = add i32 %t686, %t662
+	%t688 = add i32 %t687, %t663
+	%t689 = add i32 %t688, %t664
+	%t690 = add i32 %t689, %t665
+	%t691 = add i32 %t690, %t666
+	%t692 = add i32 %t691, %t667
+	%t693 = add i32 %t692, %t668
+	%t694 = add i32 %t693, %t669
+	%t695 = call i32 @relu_reg(i32 %t694)
+	%t696 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 0
+	%t697 = load i32, i32* %t696
+	%t698 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 1
+	%t699 = load i32, i32* %t698
+	%t700 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 2
+	%t701 = load i32, i32* %t700
+	%t702 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 3
+	%t703 = load i32, i32* %t702
+	%t704 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 4
+	%t705 = load i32, i32* %t704
+	%t706 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 0
+	%t707 = load i32, i32* %t706
+	%t708 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 1
+	%t709 = load i32, i32* %t708
+	%t710 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 2
+	%t711 = load i32, i32* %t710
+	%t712 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 3
+	%t713 = load i32, i32* %t712
+	%t714 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 4
+	%t715 = load i32, i32* %t714
+	%t716 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 0
+	%t717 = load i32, i32* %t716
+	%t718 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 1
+	%t719 = load i32, i32* %t718
+	%t720 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 2
+	%t721 = load i32, i32* %t720
+	%t722 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 3
+	%t723 = load i32, i32* %t722
+	%t724 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 4
+	%t725 = load i32, i32* %t724
+	%t726 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 0
+	%t727 = load i32, i32* %t726
+	%t728 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 1
+	%t729 = load i32, i32* %t728
+	%t730 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 2
+	%t731 = load i32, i32* %t730
+	%t732 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 3
+	%t733 = load i32, i32* %t732
+	%t734 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 4
+	%t735 = load i32, i32* %t734
+	%t736 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 0
+	%t737 = load i32, i32* %t736
+	%t738 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 1
+	%t739 = load i32, i32* %t738
+	%t740 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 2
+	%t741 = load i32, i32* %t740
+	%t742 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 3
+	%t743 = load i32, i32* %t742
+	%t744 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 4
+	%t745 = load i32, i32* %t744
+	%t746 = sub i32 0, 84
+	%t747 = sub i32 0, 121
+	%t748 = sub i32 0, 104
+	%t749 = sub i32 0, 96
+	%t750 = sub i32 0, 7
+	%t751 = sub i32 0, 119
+	%t752 = sub i32 0, 13
+	%t753 = sub i32 0, 2
+	%t754 = mul i32 %t697, 33
+	%t755 = mul i32 %t699, 82
+	%t756 = mul i32 %t701, 67
+	%t757 = mul i32 %t703, 30
+	%t758 = mul i32 %t705, %t753
+	%t759 = mul i32 %t707, 65
+	%t760 = mul i32 %t709, 120
+	%t761 = mul i32 %t711, %t752
+	%t762 = mul i32 %t713, 18
+	%t763 = mul i32 %t715, 5
+	%t764 = mul i32 %t717, 104
+	%t765 = mul i32 %t719, %t751
+	%t766 = mul i32 %t721, %t750
+	%t767 = mul i32 %t723, 71
+	%t768 = mul i32 %t725, 107
+	%t769 = mul i32 %t727, 24
+	%t770 = mul i32 %t729, 82
+	%t771 = mul i32 %t731, %t749
+	%t772 = mul i32 %t733, %t748
+	%t773 = mul i32 %t735, %t747
+	%t774 = mul i32 %t737, 65
+	%t775 = mul i32 %t739, 97
+	%t776 = mul i32 %t741, 83
+	%t777 = mul i32 %t743, 46
+	%t778 = mul i32 %t745, %t746
+	%t779 = add i32 0, %t754
+	%t780 = add i32 %t779, %t755
+	%t781 = add i32 %t780, %t756
+	%t782 = add i32 %t781, %t757
+	%t783 = add i32 %t782, %t758
+	%t784 = add i32 %t783, %t759
+	%t785 = add i32 %t784, %t760
+	%t786 = add i32 %t785, %t761
+	%t787 = add i32 %t786, %t762
+	%t788 = add i32 %t787, %t763
+	%t789 = add i32 %t788, %t764
+	%t790 = add i32 %t789, %t765
+	%t791 = add i32 %t790, %t766
+	%t792 = add i32 %t791, %t767
+	%t793 = add i32 %t792, %t768
+	%t794 = add i32 %t793, %t769
+	%t795 = add i32 %t794, %t770
+	%t796 = add i32 %t795, %t771
+	%t797 = add i32 %t796, %t772
+	%t798 = add i32 %t797, %t773
+	%t799 = add i32 %t798, %t774
+	%t800 = add i32 %t799, %t775
+	%t801 = add i32 %t800, %t776
+	%t802 = add i32 %t801, %t777
+	%t803 = add i32 %t802, %t778
+	%t804 = call i32 @relu_reg(i32 %t803)
+	%t805 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 0
+	%t806 = load i32, i32* %t805
+	%t807 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 1
+	%t808 = load i32, i32* %t807
+	%t809 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 2
+	%t810 = load i32, i32* %t809
+	%t811 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 3
+	%t812 = load i32, i32* %t811
+	%t813 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 4
+	%t814 = load i32, i32* %t813
+	%t815 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 0
+	%t816 = load i32, i32* %t815
+	%t817 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 1
+	%t818 = load i32, i32* %t817
+	%t819 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 2
+	%t820 = load i32, i32* %t819
+	%t821 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 3
+	%t822 = load i32, i32* %t821
+	%t823 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 4
+	%t824 = load i32, i32* %t823
+	%t825 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 0
+	%t826 = load i32, i32* %t825
+	%t827 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 1
+	%t828 = load i32, i32* %t827
+	%t829 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 2
+	%t830 = load i32, i32* %t829
+	%t831 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 3
+	%t832 = load i32, i32* %t831
+	%t833 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 4
+	%t834 = load i32, i32* %t833
+	%t835 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 0
+	%t836 = load i32, i32* %t835
+	%t837 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 1
+	%t838 = load i32, i32* %t837
+	%t839 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 2
+	%t840 = load i32, i32* %t839
+	%t841 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 3
+	%t842 = load i32, i32* %t841
+	%t843 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 4
+	%t844 = load i32, i32* %t843
+	%t845 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 0
+	%t846 = load i32, i32* %t845
+	%t847 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 1
+	%t848 = load i32, i32* %t847
+	%t849 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 2
+	%t850 = load i32, i32* %t849
+	%t851 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 3
+	%t852 = load i32, i32* %t851
+	%t853 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 4
+	%t854 = load i32, i32* %t853
+	%t855 = sub i32 0, 114
+	%t856 = sub i32 0, 13
+	%t857 = sub i32 0, 103
+	%t858 = sub i32 0, 77
+	%t859 = sub i32 0, 75
+	%t860 = sub i32 0, 87
+	%t861 = sub i32 0, 34
+	%t862 = sub i32 0, 73
+	%t863 = sub i32 0, 70
+	%t864 = sub i32 0, 46
+	%t865 = sub i32 0, 125
+	%t866 = sub i32 0, 62
+	%t867 = sub i32 0, 32
+	%t868 = sub i32 0, 15
+	%t869 = sub i32 0, 90
+	%t870 = sub i32 0, 70
+	%t871 = sub i32 0, 29
+	%t872 = mul i32 %t806, %t871
+	%t873 = mul i32 %t808, 7
+	%t874 = mul i32 %t810, %t870
+	%t875 = mul i32 %t812, 38
+	%t876 = mul i32 %t814, %t869
+	%t877 = mul i32 %t816, %t868
+	%t878 = mul i32 %t818, %t867
+	%t879 = mul i32 %t820, 37
+	%t880 = mul i32 %t822, 36
+	%t881 = mul i32 %t824, %t866
+	%t882 = mul i32 %t826, %t865
+	%t883 = mul i32 %t828, %t864
+	%t884 = mul i32 %t830, %t863
+	%t885 = mul i32 %t832, 37
+	%t886 = mul i32 %t834, %t862
+	%t887 = mul i32 %t836, %t861
+	%t888 = mul i32 %t838, %t860
+	%t889 = mul i32 %t840, %t859
+	%t890 = mul i32 %t842, 71
+	%t891 = mul i32 %t844, %t858
+	%t892 = mul i32 %t846, 53
+	%t893 = mul i32 %t848, 37
+	%t894 = mul i32 %t850, %t857
+	%t895 = mul i32 %t852, %t856
+	%t896 = mul i32 %t854, %t855
+	%t897 = add i32 0, %t872
+	%t898 = add i32 %t897, %t873
+	%t899 = add i32 %t898, %t874
+	%t900 = add i32 %t899, %t875
+	%t901 = add i32 %t900, %t876
+	%t902 = add i32 %t901, %t877
+	%t903 = add i32 %t902, %t878
+	%t904 = add i32 %t903, %t879
+	%t905 = add i32 %t904, %t880
+	%t906 = add i32 %t905, %t881
+	%t907 = add i32 %t906, %t882
+	%t908 = add i32 %t907, %t883
+	%t909 = add i32 %t908, %t884
+	%t910 = add i32 %t909, %t885
+	%t911 = add i32 %t910, %t886
+	%t912 = add i32 %t911, %t887
+	%t913 = add i32 %t912, %t888
+	%t914 = add i32 %t913, %t889
+	%t915 = add i32 %t914, %t890
+	%t916 = add i32 %t915, %t891
+	%t917 = add i32 %t916, %t892
+	%t918 = add i32 %t917, %t893
+	%t919 = add i32 %t918, %t894
+	%t920 = add i32 %t919, %t895
+	%t921 = add i32 %t920, %t896
+	%t922 = call i32 @relu_reg(i32 %t921)
+	%t923 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 0
+	%t924 = load i32, i32* %t923
+	%t925 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 1
+	%t926 = load i32, i32* %t925
+	%t927 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 2
+	%t928 = load i32, i32* %t927
+	%t929 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 3
+	%t930 = load i32, i32* %t929
+	%t931 = getelementptr [5 x i32], [5 x i32]* %l1, i32 0, i32 4
+	%t932 = load i32, i32* %t931
+	%t933 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 0
+	%t934 = load i32, i32* %t933
+	%t935 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 1
+	%t936 = load i32, i32* %t935
+	%t937 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 2
+	%t938 = load i32, i32* %t937
+	%t939 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 3
+	%t940 = load i32, i32* %t939
+	%t941 = getelementptr [5 x i32], [5 x i32]* %l1, i32 1, i32 4
+	%t942 = load i32, i32* %t941
+	%t943 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 0
+	%t944 = load i32, i32* %t943
+	%t945 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 1
+	%t946 = load i32, i32* %t945
+	%t947 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 2
+	%t948 = load i32, i32* %t947
+	%t949 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 3
+	%t950 = load i32, i32* %t949
+	%t951 = getelementptr [5 x i32], [5 x i32]* %l1, i32 2, i32 4
+	%t952 = load i32, i32* %t951
+	%t953 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 0
+	%t954 = load i32, i32* %t953
+	%t955 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 1
+	%t956 = load i32, i32* %t955
+	%t957 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 2
+	%t958 = load i32, i32* %t957
+	%t959 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 3
+	%t960 = load i32, i32* %t959
+	%t961 = getelementptr [5 x i32], [5 x i32]* %l1, i32 3, i32 4
+	%t962 = load i32, i32* %t961
+	%t963 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 0
+	%t964 = load i32, i32* %t963
+	%t965 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 1
+	%t966 = load i32, i32* %t965
+	%t967 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 2
+	%t968 = load i32, i32* %t967
+	%t969 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 3
+	%t970 = load i32, i32* %t969
+	%t971 = getelementptr [5 x i32], [5 x i32]* %l1, i32 4, i32 4
+	%t972 = load i32, i32* %t971
+	%t973 = sub i32 0, 49
+	%t974 = sub i32 0, 121
+	%t975 = sub i32 0, 68
+	%t976 = sub i32 0, 122
+	%t977 = sub i32 0, 7
+	%t978 = sub i32 0, 74
+	%t979 = sub i32 0, 51
+	%t980 = sub i32 0, 77
+	%t981 = sub i32 0, 92
+	%t982 = sub i32 0, 123
+	%t983 = mul i32 %t924, 67
+	%t984 = mul i32 %t926, 42
+	%t985 = mul i32 %t928, 41
+	%t986 = mul i32 %t930, %t982
+	%t987 = mul i32 %t932, %t981
+	%t988 = mul i32 %t934, 10
+	%t989 = mul i32 %t936, %t980
+	%t990 = mul i32 %t938, 75
+	%t991 = mul i32 %t940, 96
+	%t992 = mul i32 %t942, %t979
+	%t993 = mul i32 %t944, 109
+	%t994 = mul i32 %t946, %t978
+	%t995 = mul i32 %t948, %t977
+	%t996 = mul i32 %t950, %t976
+	%t997 = mul i32 %t952, 67
+	%t998 = mul i32 %t954, 47
+	%t999 = mul i32 %t956, 22
+	%t1000 = mul i32 %t958, %t975
+	%t1001 = mul i32 %t960, 38
+	%t1002 = mul i32 %t962, 29
+	%t1003 = mul i32 %t964, 115
+	%t1004 = mul i32 %t966, %t974
+	%t1005 = mul i32 %t968, 36
+	%t1006 = mul i32 %t970, %t973
+	%t1007 = mul i32 %t972, 85
+	%t1008 = add i32 0, %t983
+	%t1009 = add i32 %t1008, %t984
+	%t1010 = add i32 %t1009, %t985
+	%t1011 = add i32 %t1010, %t986
+	%t1012 = add i32 %t1011, %t987
+	%t1013 = add i32 %t1012, %t988
+	%t1014 = add i32 %t1013, %t989
+	%t1015 = add i32 %t1014, %t990
+	%t1016 = add i32 %t1015, %t991
+	%t1017 = add i32 %t1016, %t992
+	%t1018 = add i32 %t1017, %t993
+	%t1019 = add i32 %t1018, %t994
+	%t1020 = add i32 %t1019, %t995
+	%t1021 = add i32 %t1020, %t996
+	%t1022 = add i32 %t1021, %t997
+	%t1023 = add i32 %t1022, %t998
+	%t1024 = add i32 %t1023, %t999
+	%t1025 = add i32 %t1024, %t1000
+	%t1026 = add i32 %t1025, %t1001
+	%t1027 = add i32 %t1026, %t1002
+	%t1028 = add i32 %t1027, %t1003
+	%t1029 = add i32 %t1028, %t1004
+	%t1030 = add i32 %t1029, %t1005
+	%t1031 = add i32 %t1030, %t1006
+	%t1032 = add i32 %t1031, %t1007
+	%t1033 = call i32 @relu_reg(i32 %t1032)
+	%t1034 = sub i32 0, 23
+	%t1035 = sub i32 0, 50
+	%t1036 = sub i32 0, 95
+	%t1037 = sub i32 0, 3
+	%t1038 = sub i32 0, 106
+	%t1039 = mul i32 %t14, 39
+	%t1040 = mul i32 %t133, 77
+	%t1041 = mul i32 %t244, 127
+	%t1042 = mul i32 %t357, %t1038
+	%t1043 = mul i32 %t469, %t1037
+	%t1044 = mul i32 %t583, 32
+	%t1045 = mul i32 %t695, %t1036
+	%t1046 = mul i32 %t804, %t1035
+	%t1047 = mul i32 %t922, %t1034
+	%t1048 = mul i32 %t1033, 46
+	%t1049 = add i32 0, %t1039
+	%t1050 = add i32 %t1049, %t1040
+	%t1051 = add i32 %t1050, %t1041
+	%t1052 = add i32 %t1051, %t1042
+	%t1053 = add i32 %t1052, %t1043
+	%t1054 = add i32 %t1053, %t1044
+	%t1055 = add i32 %t1054, %t1045
+	%t1056 = add i32 %t1055, %t1046
+	%t1057 = add i32 %t1056, %t1047
+	%t1058 = add i32 %t1057, %t1048
+	%l2 = add i32 %t1058, 0
+	%l3 = add i32 0, 0
+	%t1059 = icmp sgt i32 %l2, %l3
+	br i1 %t1059,label %Label_and_3, label %Label_or_3
+
+Label_and_3:
+	br i1 %t1059,label %Label_stmt_3, label %Label_or_3
+
+Label_or_3:
+	br label %Label_if_2_3
+
+Label_stmt_3:
+	ret i32 1
+	br label %Label_cond_3
+
+Label_if_2_3:
+	br label %Label_cond_3
+
+Label_cond_3:
+	ret i32 0
+	ret i32 0
+}
+define dso_local i32@main() {
+	%l1 = alloca i32
+	%t1 = call i32 @getint()
+	store i32 %t1, i32* %l1
+	%l2 = alloca [5 x [5 x i32]]
+	%l3 = getelementptr [5 x [5 x i32]], [5 x [5 x i32]]* %l2, i32 0, i32 0, i32 0
+	call void @memset(i32* %l3, i32 0, i32 100)
+	br label %Label_while_1
+
+Label_while_1:
+	%l4 = load i32, i32* %l1
+	%l5 = add i32 %l4, 0
+	%l6 = add i32 0, 0
+	%t2 = icmp sgt i32 %l5, %l6
+	br i1 %t2,label %Label_and_4, label %Label_or_4
+
+Label_and_4:
+	br i1 %t2,label %Label_stmt_4, label %Label_or_4
+
+Label_or_4:
+	br label %Label_whileEnd_1
+
+Label_stmt_4:
+	%l7 = alloca i32
+	store i32 0, i32* %l7
+	br label %Label_while_2
+
+Label_while_2:
+	%l8 = load i32, i32* %l7
+	%l9 = add i32 %l8, 0
+	%l10 = add i32 5, 0
+	%t3 = icmp slt i32 %l9, %l10
+	br i1 %t3,label %Label_and_5, label %Label_or_5
+
+Label_and_5:
+	br i1 %t3,label %Label_stmt_5, label %Label_or_5
+
+Label_or_5:
+	br label %Label_whileEnd_2
+
+Label_stmt_5:
+	%l11 = alloca i32
+	store i32 0, i32* %l11
+	br label %Label_while_3
+
+Label_while_3:
+	%l12 = load i32, i32* %l11
+	%l13 = add i32 %l12, 0
+	%l14 = add i32 5, 0
+	%t4 = icmp slt i32 %l13, %l14
+	br i1 %t4,label %Label_and_6, label %Label_or_6
+
+Label_and_6:
+	br i1 %t4,label %Label_stmt_6, label %Label_or_6
+
+Label_or_6:
+	br label %Label_whileEnd_3
+
+Label_stmt_6:
+	%l15 = load i32, i32* %l7
+	%l16 = load i32, i32* %l11
+	%t5 = getelementptr [5 x [5 x i32]], [5 x [5 x i32]]* %l2, i32 0, i32 %l15, i32 %l16
+	%t6 = call i32 @getint()
+	store i32 %t6, i32* %t5
+	%t7 = load i32, i32* %l11
+	%t8 = add i32 %t7, 1
+	store i32 %t8, i32* %l11
+	br label %Label_while_3
+
+Label_whileEnd_3:
+	%t9 = load i32, i32* %l7
+	%t10 = add i32 %t9, 1
+	store i32 %t10, i32* %l7
+	br label %Label_while_2
+
+Label_whileEnd_2:
+	br label %Label_if_1_4
+
+Label_if_1_4:
+	%t11 = getelementptr [5 x [5 x i32]], [5 x [5 x i32]]* %l2, i32 0, i32 0
+	%t12 = call i32 @model([5 x i32]* %t11)
+	%l17 = add i32 %t12, 0
+	%t13 = icmp ne i32 %l17,0
+	br i1 %t13,label %Label_and_7, label %Label_or_7
+
+Label_and_7:
+	br i1 %t13,label %Label_stmt_7, label %Label_or_7
+
+Label_or_7:
+	br label %Label_if_2_4
+
+Label_stmt_7:
+	call void @putch(i32 99)
+	call void @putch(i32 97)
+	call void @putch(i32 116)
+	call void @putch(i32 10)
+	br label %Label_cond_4
+
+Label_if_2_4:
+	call void @putch(i32 100)
+	call void @putch(i32 111)
+	call void @putch(i32 103)
+	call void @putch(i32 10)
+	br label %Label_cond_4
+
+Label_cond_4:
+	%t14 = load i32, i32* %l1
+	%t15 = sub i32 %t14, 1
+	store i32 %t15, i32* %l1
+	br label %Label_while_1
+
+Label_whileEnd_1:
+	ret i32 0
+	ret i32 0
+}

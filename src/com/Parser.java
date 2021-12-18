@@ -339,13 +339,13 @@ public class Parser {
     public String string_arrayDim(ArrayList<Integer> dim,int i){
         StringBuilder arrayFormat=new StringBuilder("");
         if(dim.size()==0){
-            arrayFormat.append("i32* ");
+            arrayFormat.append("i32");
         }else if(i<dim.size()-1){
             arrayFormat.append("["+dim.get(i)+" x ");
             arrayFormat.append(string_arrayDim(dim,i+1));
             arrayFormat.append("]");
         }else{
-            arrayFormat.append("i32* ");
+            arrayFormat.append("i32");
         }
         return arrayFormat.toString();
     }
@@ -1000,10 +1000,13 @@ public class Parser {
         for(String i:index){
             System.out.printf(", i32 %s",i);
         }
-        for(int i=index.size();i<var.dim.size();i++){
+        if(index.size()<var.dim.size()){
+            System.out.print(", i32 0");
+        }
+        /*for(int i=index.size();i<var.dim.size();i++){
             System.out.print(", i32 0");
             break;
-        }
+        }*/
         return "%t"+ (registerNum_temp - 1);
     }
     public void exp_format(){
@@ -1057,7 +1060,7 @@ public class Parser {
 
         if(isPtrParam(varName)){
             Variable var=isDeclared(varName).get(varName);
-            RParamsInit.append(string_arrayDim(var.dim, dimCount)+getElementPtr(var));
+            RParamsInit.append(string_arrayDim(var.dim, dimCount)+"* "+getElementPtr(var));
         }else{
             currentToken--;
             RParamsInit.append("i32 ");

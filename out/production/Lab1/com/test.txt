@@ -1,94 +1,50 @@
-int func1(int x, int y, int z) {
-      if (z == 0) {
-          return x * y;
-      } else {
-          return func1(x, y - z, 0);
-      }
-  }
-  
-  int func2(int x, int y) {
-      if (y) {
-          return func2(x % y, 0);
-      } else {
-          return x;
-      }
-  }
-  
-  int func3(int x, int y) {
-      if (y == 0) {
-          return x + 1;
-      } else {
-          return func3(x + y, 0);
-      }
-  }
-  
-  int func4(int x, int y, int z) {
-      if (x) {
-          return y;
-      } else {
-          return z;
-      }
-  }
-  
-  int func5(int x) { return -x; }
-  
-  int func6(int x, int y) {
-      if (x && y) {
-          return 1;
-      } else {
+int relu_reg(int a) {
+      if (a > 0x7F)
+          return 0x7F;
+      if (a < 0)
           return 0;
-      }
+      return a;
   }
-  
-  int func7(int x) {
-      if (!x) {
+
+  int model(int a[][5]) {
+      if (+relu_reg(
+              +a[0][0] * 85 + a[0][1] * 23 + a[0][2] * -82 + a[0][3] * -103 + a[0][4] * -123 + a[1][0] * 64
+              + a[1][1] * -120 + a[1][2] * 50 + a[1][3] * -59 + a[1][4] * 47 + a[2][0] * -111 + a[2][1] * -67
+              + a[2][2] * -106 + a[2][3] * -75 + a[2][4] * -102 + a[3][0] * 34 + a[3][1] * -39 + a[3][2] * 65
+              + a[3][3] * 47 + a[3][4] * 113 + a[4][0] * 110 + a[4][1] * 47 + a[4][2] * -4 + a[4][3] * 80 + a[4][4] * 46)
+                  * 39
+              )
           return 1;
-      } else {
-          return 0;
-      }
+      return 0;
   }
-  
+
   int main() {
-      int i1 = getint(), i2 = getint(), i3 = getint(), i4 = getint();
-      int arr[10];
-      int i = 0;
-      while (i < 10) {
-          arr[i] = getint();
-          i      = i + 1;
+      int N = getint();
+      int a[5][5];
+      while (N > 0) {
+          int i = 0;
+          while (i < 5) {
+              int j = 0;
+              while (j < 5) {
+                  a[i][j] = getint();
+                  j       = j + 1;
+              }
+              i = i + 1;
+          }
+          if (model(a)) {
+              // cat
+              putch(99);
+              putch(97);
+              putch(116);
+              putch(10);
+          } else {
+              // dog
+              putch(100);
+              putch(111);
+              putch(103);
+              putch(10);
+          }
+          N = N - 1;
       }
-      int a = func1(
-          // this
-          func2(
-              // is
-              func1(
-                  // comment
-                  func3(
-                      func4(
-                          func5(func3(
-                              func2(func6(func7(i1), func5(i2)), i3),
-                              // this
-                              i4)),
-                          // is
-                          arr[0],
-                          // function
-                          func1(
-                              func2(
-                                  func3(
-                                      func4(
-                                          func5(arr[1]),
-                                          // call
-                                          func6(arr[2], func7(arr[3])),
-                                          func2(arr[4], func7(arr[5]))),
-                                      arr[6]),
-                                  arr[7]),
-                              func3(arr[8], func7(arr[9])), i1)),
-                      func2(i2, func3(func7(i3), i4))),
-                  arr[0], arr[1]),
-              arr[2]),
-          arr[3],
-          func3(
-              func2(func1(func2(func3(arr[4], func5(arr[5])), func5(arr[6])), arr[7], func7(arr[8])), func5(arr[9])),
-              i1));
-      putint(a);
       return 0;
   }

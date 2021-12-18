@@ -8,6 +8,7 @@ public class Calculator {
     public String compute(String calStr){
         //System.out.println("------"+calStr);
         calStr=removeSerialSign(calStr);
+        calStr=addPar(calStr);
         //System.out.println("------"+calStr);
         registerNum=Parser.registerNum_temp;
         try {
@@ -20,6 +21,22 @@ public class Calculator {
             return "-0xFFFFFFF";
         }
 
+    }
+    public String addPar(String str){
+        StringBuilder calStr=new StringBuilder(str);
+        for(int i=0;i<calStr.length();i++){
+            if((calStr.charAt(i)=='-'||calStr.charAt(i)=='+')&&Character.isDigit(calStr.charAt(i+1))){
+                if(i!=0&&(calStr.charAt(i-1)=='*'||calStr.charAt(i-1)=='/'||calStr.charAt(i-1)=='%')){
+                    calStr.insert(i,'(');
+                    i+=2;
+                    while(Character.isDigit(calStr.charAt(i))){
+                        i++;
+                    }
+                    calStr.insert(i,')');
+                }
+            }
+        }
+        return calStr.toString();
     }
     public String removeSerialSign(String str){
         StringBuilder calStr=new StringBuilder("");

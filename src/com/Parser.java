@@ -785,6 +785,8 @@ public class Parser {
         and_result= condCalculator.compute(cond_exp.toString());
         cond_exp=new StringBuilder("");
         if(count_Not%2==1){
+            /*System.out.printf("\n\t%%l%d = zext i1 %s to i32",registerNum,and_result);
+            registerNum++;*/
             System.out.printf("\n\t%%l%d = icmp eq i1 %s, 0",registerNum,and_result);
             and_result="%l"+registerNum;
             registerNum++;
@@ -885,7 +887,9 @@ public class Parser {
             }else{
                 expression.append(token.word);
             }
+            int count_Not_save=count_Not;
             UnaryExp();
+            count_Not=count_Not_save;
         } else if(token.id.equals("Num")){
             expression.append(token.word);
         } else if(token.id.equals("Func")){
@@ -1108,7 +1112,6 @@ public class Parser {
         expValue=calculator.compute(expression.toString());
         expression=new StringBuilder("");
         exp_format();
-        System.out.printf("\n\tcall void @putint(i32 666)");
         System.out.printf("\n\tcall void @putint(i32 %s)",expValue);
         currentToken++;
     }

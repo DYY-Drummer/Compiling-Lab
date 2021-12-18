@@ -12,6 +12,7 @@ public class Variable {
     boolean isFParam=false;
     ArrayList<Integer> dim;
     int paramsNum;
+    boolean FParamArray=false;
     public Variable(String name,boolean isConst,int reg){
         this.name=name;
         this.isConst=isConst;

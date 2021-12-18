@@ -115,6 +115,7 @@ public class Parser {
         String varName=getNextToken().word;
         Variable var =new Variable(varName,false,registerNum);
         if(token_list.get(currentToken+1).word.equals("[")){
+            var.FParamArray=true;
             ArrayList<Integer> dim=new ArrayList<>();
             currentToken+=2;
             while(getNextToken().word.equals("[")){
@@ -1040,7 +1041,7 @@ public class Parser {
 
         if(isPtrParam(varName)){
             Variable var=isDeclared(varName).get(varName);
-            RParamsInit.append(string_arrayDim(var.dim, dimCount)+"* "+getElementPtr(var));
+            RParamsInit.append(string_arrayDim(var.dim, dimCount)+getElementPtr(var));
         }else{
             currentToken--;
             RParamsInit.append("i32 ");
@@ -1066,7 +1067,7 @@ public class Parser {
             }
             currentToken_temp++;
         }
-        return var.dim != null && dimCount < var.dim.size();
+        return var.FParamArray||var.dim != null && dimCount < var.dim.size();
     }
     public void putch()throws Exception{
         currentToken++;

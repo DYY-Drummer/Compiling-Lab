@@ -901,6 +901,8 @@ public class Parser {
             if(varMap==null){
                 throw new Exception("Ident in UnaryExp hasn't been declared");
             } else if(token_list.get(currentToken+1).word.equals("(")){
+                int RParamsNum_save=RParamsNum;
+                RParamsNum=0;
                 Func();
                 if(!global_map.containsKey(token.word)){
                     System.out.println("\n----------"+token.word);
@@ -910,6 +912,7 @@ public class Parser {
                 if(RParamsNum!=var.paramsNum){
                     throw new Exception("RParams' number is not the same as FParam's number");
                 }
+                RParamsNum=RParamsNum_save;
                 if(var.isVoid){
                     System.out.printf("\n\tcall void @%s(%s)",var.name,RParamsInit.toString());
                 }else {
@@ -1025,7 +1028,7 @@ public class Parser {
     public void Func()throws Exception{
         currentToken++;
         RParamsInit=new StringBuilder("");
-        RParamsNum=0;
+
         if(!token_list.get(currentToken+1).word.equals(")")){
             FuncRParams();
         }
@@ -1055,10 +1058,15 @@ public class Parser {
         }else{
             currentToken--;
             RParamsInit.append("i32 ");
+            StringBuilder RParamsInit_save=RParamsInit;
+            RParamsInit=new StringBuilder("");
+            StringBuilder expression_save=expression;
+            expression=new StringBuilder("");
             Exp();
             expValue=calculator.compute(expression.toString());
             exp_format();
-            expression=new StringBuilder("");
+            RParamsInit=RParamsInit_save;
+            expression=expression_save;
             RParamsInit.append(expValue);
         }
     }
@@ -1099,12 +1107,14 @@ public class Parser {
     }
     public void putarray()throws Exception{
         RParamsInit=new StringBuilder("");
-        RParamsNum=0;
         currentToken++;
+        int RParamsNum_save=RParamsNum;
+        RParamsNum=0;
         FuncRParams();
         if(RParamsNum!=2){
             throw new Exception("putarray(i32, i32*)'s RParams number is not 2");
         }
+        RParamsNum=RParamsNum_save;
         currentToken++;
         System.out.printf("\n\tcall void @putarray(%s)",RParamsInit.toString());
     }
@@ -1118,12 +1128,14 @@ public class Parser {
     }
     public void getarray()throws Exception{
         RParamsInit=new StringBuilder("");
-        RParamsNum=0;
         currentToken++;
+        int RParamsNum_save=RParamsNum;
+        RParamsNum=0;
         FuncRParams();
         if(RParamsNum!=1){
             throw new Exception("getarray(i32*)'s RParams number is not 1");
         }
+        RParamsNum=RParamsNum_save;
         currentToken++;
         System.out.printf("\n\t%%t%d = call i32 @getarray(%s)",registerNum_temp,RParamsInit.toString());
     }

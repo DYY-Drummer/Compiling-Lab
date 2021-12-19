@@ -35,7 +35,7 @@ public class Parser {
     ArrayList<Integer> dim_current =new ArrayList<>();
     int array_level;
     boolean FParamInit;
-    boolean RParamInit;
+    boolean arrayInit;
     ArrayList<Variable> copyFParam;
     public Token getNextToken()throws Exception{
         currentToken++;
@@ -290,6 +290,7 @@ public class Parser {
                 exp_format();
                 System.out.printf("\n\tstore i32 %s, i32* %%l%d", expValue, registerNum);
                 registerNum++;
+                var.constValue = Integer.parseInt(expValue);
             } else {
                 System.out.printf("\n@%s = dso_local global i32 %s", varName, expValue);
                 var.constValue = Integer.parseInt(expValue);
@@ -405,7 +406,7 @@ public class Parser {
     }
     public void ConstExp()throws Exception{
         AddExp();
-        if(register_map==global_map||FParamInit) {
+        if(register_map==global_map||FParamInit||arrayInit) {
             expValue=constCalculator.compute(expression.toString());
         }else{
             expValue = calculator.compute(expression.toString());
@@ -438,7 +439,9 @@ public class Parser {
         int reg = registerNum;
         Variable var = new Variable(name, false, reg);;
         while(getNextToken().word.equals("[")){
+            arrayInit=true;
             ConstExp();
+            arrayInit=false;
             dim.add(Integer.parseInt(expValue));
             if(!getNextToken().word.equals("]")){
                 throw new Exception("Missing RBra of Array in VarDef");
@@ -956,6 +959,11 @@ public class Parser {
                     System.out.printf("\n\t%%t%d = load i32, i32* %s",registerNum_temp,ptr);
                     expression.append("t"+registerNum_temp);
                     registerNum_temp++;
+                }else if(arrayInit){
+                    if(!var.isConst){
+                        throw new Exception("Array dim can't be init by val");
+                    }
+                    expression.append(var.constValue);
                 }else{
                     expression.append("v"+varMap.get(var.name).reg);
                 }

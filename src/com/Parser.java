@@ -543,7 +543,11 @@ public class Parser {
             expression=new StringBuilder("");
             int position=0;
             for(int i=0;i<dim.size()-1;i++){
-                position+=dim_current.get(i)*dim.get(i+1);
+                int sub_dim=1;
+                for(int j=i+1;j<dim.size();j++){
+                    sub_dim*=dim.get(j);
+                }
+                position+=dim_current.get(i)*sub_dim;
             }
             position+=dim_current.get(dim.size()-1);
             System.out.printf("\n\t%%l%d = getelementptr i32, i32* %%l%d, i32 %d",registerNum,reg,position);

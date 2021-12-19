@@ -23,8 +23,6 @@ public class Test {
                 tokenizer.analyze(temp);
             }
             tokenizer.token_list.add(new Token("END","#"));
-//            for(int i=0;i<Analysis.token_list.size();i++)
-//                System.out.println(Analysis.token_list.get(i).word);
             Parser parser=new Parser();
             parser.CompUnit();
             //close file

@@ -103,6 +103,7 @@ public class Parser {
         }
         System.out.print("\n}");
         stack_block.removeLast();
+        register_map=stack_block.getLast();
     }
     public void FuncFParams()throws Exception{
         FParamInit=true;

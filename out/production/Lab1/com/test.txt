@@ -1,37 +1,38 @@
-int golbal[100] = {1, 2}, x, y, z;
+int a[3][4][5] =
+  {{
+  {0, 1, 2, 3, 4},
+  {5, 6, 7, 8, 9},
+  {10, 11, 12, 13, 14},
+  {15, 16, 17, 18, 19}},
+  {{20, 21, 22, 23, 24},
+  {25, 26, 27, 28, 29},
+  {30, 31, 32, 33, 34},
+  {35, 36, 37, 38, 39}},
+  {{40, 41, 42, 43, 44},
+  {45, 46, 47, 48, 49},
+  {50, 51, 52, 53, 54},
+  {55, 56, 57, 58, 59}}};
+  int b[100];
+  int d[100];
+  int c = 50;
 
-  void f(int b[], int c) {
-    int aaaa[3][3][3] = {{{1,2,3},{4,5,6},{7,8,9}},{{1,2,3},{4,5,6},{7,8,9}},{{1,2,3},{4,5,6},{7,8,9}}};
-    int bbbb[3][3][3] = {{{1,2,3},{4,5,6},{7,8,9}},{{1,2,3},{4,5,6},{7,8,9}},{{1,2,3},{4,5,6},{7,8,9}}};
-    int result[3][3][3] = {};
-    int xx, yx, zx;
-    int i = 0;
-    int j = 0;
-    int k = 0;
-    while (i < 3) {
-      j = 0;
-      while (j < 3) {
-          k = 0;
-          while (k < 3) {
-            result[i][j][k] = aaaa[i][j][k] + bbbb[i][j][k];
-            k = k + 1;
-          }
-        j = j + 1;
-      }
-      i = i + 1;
-    }
-    putarray(3, result[0][0]);
-    putarray(3, result[0][1]);
-    putarray(3, result[0][2]);
-    putarray(3, result[1][0]);
-    putarray(3, result[1][1]);
-    putarray(3, result[1][2]);
-    putarray(3, result[2][0]);
-    putarray(3, result[2][1]);
-    putarray(3, result[2][2]);
+  void f() {
+    b[a[1][2][3]] = 5;
+    b[c] = 7;
+  }
+
+  void g(int x[]) {
+    x[c] = 9;
   }
 
   int main() {
-    f(golbal, 0x10);
+    putint(a[2][3][3]); putch(10);
+    putint(a[2][3][4]); putch(10);
+    putint(a[2][3][4]); putch(10);
+    putint(c); putch(10);
+    f();
+    putint(b[a[1][2][3]]); putch(10);
+    g(d);
+    putint(d[c]); putch(10);
     return 0;
   }

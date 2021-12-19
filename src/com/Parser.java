@@ -359,8 +359,11 @@ public class Parser {
                 throw new Exception("out of the max dim of Array");
             }
             if(!getNextToken().word.equals("}")){
-                if(array_level==dim.size()-1&&dim.size()>1){
+                /*if(array_level==dim.size()-1&&dim.size()>1){
                     System.out.printf("[%s x i32] ",dim.get(dim.size()-1));
+                }*/
+                if(dim_current.get(array_level)==0&&array_level>0){
+                    print_arrayDim(dim,array_level);
                 }
                 System.out.print("[");
                 currentToken--;

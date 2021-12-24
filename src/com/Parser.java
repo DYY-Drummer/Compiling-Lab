@@ -147,15 +147,12 @@ public class Parser {
         registerNum++;
     }
     public void copyFParam(){
-
         for(Variable i:copyFParam){
             System.out.printf("\n\t%%l%d = alloca i32",registerNum);
             System.out.printf("\n\tstore i32 %%l%d, i32* %%l%d",i.reg,registerNum);
             i.reg=registerNum;
             registerNum++;
         }
-
-
     }
     public void FuncType(Variable var) throws Exception{
         Token token=getNextToken();

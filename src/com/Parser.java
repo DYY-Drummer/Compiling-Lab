@@ -407,7 +407,8 @@ public class Parser {
     }
     public void ConstExp()throws Exception{
         AddExp();
-        if(register_map==global_map||FParamInit||arrayInit) {
+        System.out.printf("\n----------"+expression.toString());
+        if(register_map==global_map||FParamInit||arrayInit||constInit) {
             expValue=constCalculator.compute(expression.toString());
         }else{
             expValue = calculator.compute(expression.toString());
@@ -964,7 +965,7 @@ public class Parser {
                     System.out.printf("\n\t%%t%d = load i32, i32* %s",registerNum_temp,ptr);
                     expression.append("t"+registerNum_temp);
                     registerNum_temp++;
-                }else if(arrayInit){
+                }else if(arrayInit||constInit){
                     if(!var.isConst){
                         throw new Exception("Array dim can't be init by val");
                     }

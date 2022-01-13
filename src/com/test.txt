@@ -1,9 +1,14 @@
 int main() {
- int sudo = 0;
- const int rm = 5;
-  int r = 3;
-  const int home = rm * 5 - 20;
-  sudo = rm -r /home*        0;
-  putint(sudo);
-  return 0;
-}
+      int a, b;
+      a = 070;
+      b = 0x4;
+      a = a - - 4 + + b;
+      if (+-!!!a) {
+          a = - - -1;
+      }
+      else {
+          a = 0 + + b;
+      }
+      putint(a);
+      return 0;
+  }

@@ -895,9 +895,9 @@ public class Parser {
             }else{
                 expression.append(token.word);
             }
-            int count_Not_save=count_Not;
+            //int count_Not_save=count_Not;
             UnaryExp();
-            count_Not=count_Not_save;
+            //count_Not=count_Not_save;
         } else if(token.id.equals("Num")){
             expression.append(token.word);
         } else if(token.id.equals("Func")){

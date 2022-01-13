@@ -1,4 +1,4 @@
-[jobs.mem2reg]
+[jobs.lab1]
 
 image = { source = "dockerfile", path = "."}
 

@@ -407,7 +407,6 @@ public class Parser {
     }
     public void ConstExp()throws Exception{
         AddExp();
-        System.out.printf("\n----------"+expression.toString());
         if(register_map==global_map||FParamInit||arrayInit||constInit) {
             expValue=constCalculator.compute(expression.toString());
         }else{

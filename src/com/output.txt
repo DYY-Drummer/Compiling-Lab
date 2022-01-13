@@ -1,0 +1,29 @@
+declare i32 @getch()
+declare void @putch(i32)
+declare void @putint(i32)
+declare i32 @getint()
+declare void @memset(i32*, i32, i32)
+declare i32 @getarray(i32*)
+declare void @putarray(i32, i32*)
+
+define dso_local i32@main() {
+	%l1 = alloca i32
+	store i32 0, i32* %l1
+	%l2 = alloca i32
+	store i32 5, i32* %l2
+	%l3 = alloca i32
+	store i32 3, i32* %l3
+	%l4 = alloca i32
+	store i32 5, i32* %l4
+	%t1 = load i32, i32* %l3
+	%t2 = load i32, i32* %l4
+	%t3 = sdiv i32 %t1, %t2
+	%t4 = mul i32 %t3, 0
+	%t5 = load i32, i32* %l2
+	%t6 = sub i32 %t5, %t4
+	store i32 %t6, i32* %l1
+	%l5 = load i32, i32* %l1
+	call void @putint(i32 %l5)
+	ret i32 0
+	ret i32 0
+}

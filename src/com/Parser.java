@@ -407,7 +407,7 @@ public class Parser {
     }
     public void ConstExp()throws Exception{
         AddExp();
-        if(register_map==global_map||FParamInit||arrayInit||constInit) {
+        if(register_map==global_map||FParamInit||arrayInit) {
             expValue=constCalculator.compute(expression.toString());
         }else{
             expValue = calculator.compute(expression.toString());
@@ -895,9 +895,9 @@ public class Parser {
             }else{
                 expression.append(token.word);
             }
-            //int count_Not_save=count_Not;
+            int count_Not_save=count_Not;
             UnaryExp();
-            //count_Not=count_Not_save;
+            count_Not=count_Not_save;
         } else if(token.id.equals("Num")){
             expression.append(token.word);
         } else if(token.id.equals("Func")){
@@ -964,7 +964,7 @@ public class Parser {
                     System.out.printf("\n\t%%t%d = load i32, i32* %s",registerNum_temp,ptr);
                     expression.append("t"+registerNum_temp);
                     registerNum_temp++;
-                }else if(arrayInit||constInit){
+                }else if(arrayInit){
                     if(!var.isConst){
                         throw new Exception("Array dim can't be init by val");
                     }
@@ -1062,14 +1062,14 @@ public class Parser {
     StringBuilder RParamsInit;
     int dimCount;
     public void FuncRParams()throws Exception{
-       FuncRParam();
-       RParamsNum++;
-       while(getNextToken().word.equals(",")){
-           RParamsInit.append(", ");
-           FuncRParam();
-           RParamsNum++;
-       }
-       currentToken--;
+        FuncRParam();
+        RParamsNum++;
+        while(getNextToken().word.equals(",")){
+            RParamsInit.append(", ");
+            FuncRParam();
+            RParamsNum++;
+        }
+        currentToken--;
     }
     public void FuncRParam()throws Exception{
         String varName = getNextToken().word;
@@ -1163,5 +1163,4 @@ public class Parser {
         System.out.printf("\n\t%%t%d = call i32 @getarray(%s)",registerNum_temp,RParamsInit.toString());
     }
 }
-
 
